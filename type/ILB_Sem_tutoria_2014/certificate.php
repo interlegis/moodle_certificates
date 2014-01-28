@@ -88,9 +88,9 @@ if ($certificate->orientation == 'L') {
     $sealx = 230;
     $sealy = 150;
     $sigx = 00;
-    $sigy = 170;
+    $sigy = 165;
     $custx = 15;
-    $custy = $y+82;
+    $custy = $y+25;
     $wmarkx = 40;
     $wmarky = 31;
     $wmarkw = 212;
@@ -99,16 +99,17 @@ if ($certificate->orientation == 'L') {
     $brdry = 0;
     $brdrw = 297;
     $brdrh = 210;
-    $codey = $y+94;
+    $codex = 220;
+    $codey = $y-6;
 } else { // Portrait
     $x = 10;
-    $y = 40;
+    $y = 90;
     $sealx = 150;
     $sealy = 220;
     $sigx = 10;
-    $sigy = 240;
+    $sigy = 235;
     $custx = 15;
-    $custy = $y+82;
+    $custy = $y+25;
     $wmarkx = 26;
     $wmarky = 58;
     $wmarkw = 158;
@@ -117,7 +118,8 @@ if ($certificate->orientation == 'L') {
     $brdry = 0;
     $brdrw = 210;
     $brdrh = 297;
-    $codey = $y+94;
+    $codex = 130;
+    $codey = $y-6;
 }
 
 function mystrtoupper($s) {
@@ -125,6 +127,7 @@ function mystrtoupper($s) {
   return strtr($s, 'áéíóúàèìòùãẽĩõũâêîôûäëïöüç', 'ÁÉÍÓÚÀÈÌÒÙÃẼĨÕŨÂÊÎÔÛÄËÏÖÜÇ');
 }
 
+// Front page ------------------------------------------------------------------------------------------------------------
 // Add images and lines
 certificate_print_image($pdf, $certificate, CERT_IMAGE_BORDER, $brdrx, $brdry, $brdrw, $brdrh);
 certificate_draw_frame($pdf, $certificate);
@@ -145,7 +148,31 @@ certificate_print_text($pdf, $x, $y + 51, 'C', 'freesans', 'B', 20, mystrtoupper
 if ($certificate->printhours) {
     certificate_print_text($pdf, $x, $y + 63, 'C', 'freesans', '', 20, "com carga horária de {$certificate->printhours} na modalidade a distância.");
 }
-certificate_print_text($pdf, $custx, $custy, 'L', 'freesans', '', 10, $certificate->customtext);
+certificate_print_text($pdf, $x, $y + 82, 'R', 'freesans', 'B', 14,  "Brasília, " . certificate_get_date($certificate, $certrecord, $course));
+certificate_print_text($pdf, $codex, $codey, 'C', 'freesans', '', 10, 'CÓDIGO DE VALIDAÇÃO');
+certificate_print_text($pdf, $codex, $codey + 5, 'C', 'freesans', 'B', 10, certificate_get_code($certificate, $certrecord));
+certificate_print_text($pdf, $codex, $codey + 10, 'C', 'freesans', '', 10, 'validar em http://saberes.senado.leg.br/');
+
+// Verse page -----------------------------------------------------------------------------------------------------------
+$pdf->AddPage();
 certificate_print_text($pdf, $x, $y + 82, 'R', 'freesans', 'B', 14,  "Brasília, " . certificate_get_date($certificate, $certrecord, $course));
 certificate_print_text($pdf, $x, $codey, 'R', 'freesans', '', 10, 'CÓDIGO DE VALIDAÇÃO: ' . certificate_get_code($certificate, $certrecord));
+// Add images and lines
+certificate_print_image($pdf, $certificate, CERT_IMAGE_BORDER, $brdrx, $brdry, $brdrw, $brdrh);
+certificate_draw_frame($pdf, $certificate);
+// Set alpha to semi-transparency
+$pdf->SetAlpha(0.2);
+certificate_print_image($pdf, $certificate, CERT_IMAGE_WATERMARK, $wmarkx, $wmarky, $wmarkw, $wmarkh);
+$pdf->SetAlpha(1);
+certificate_print_image($pdf, $certificate, CERT_IMAGE_SEAL, $sealx, $sealy, '', '');
+certificate_print_image($pdf, $certificate, CERT_IMAGE_SIGNATURE, $sigx, $sigy, '', '');
+
+// Add text
+$pdf->SetTextColor(0, 0, 0);
+certificate_print_text($pdf, $codex, $codey, 'C', 'freesans', '', 10, 'CÓDIGO DE VALIDAÇÃO');
+certificate_print_text($pdf, $codex, $codey + 5, 'C', 'freesans', 'B', 10, certificate_get_code($certificate, $certrecord));
+certificate_print_text($pdf, $codex, $codey + 10, 'C', 'freesans', '', 10, 'validar em http://saberes.senado.leg.br/');
+certificate_print_text($pdf, $x, $y, 'C', 'freesans', '', 20, 'PROGRAMA DO CURSO');
+certificate_print_text($pdf, $x, $y + 10, 'C', 'freesans', '', 20, mystrtoupper($course->fullname));
+certificate_print_text($pdf, $custx, $custy, 'L', 'freesans', '', 10, $certificate->customtext);
 ?>
