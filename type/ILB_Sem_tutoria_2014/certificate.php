@@ -99,8 +99,8 @@ if ($certificate->orientation == 'L') {
     $brdry = 0;
     $brdrw = 297;
     $brdrh = 210;
-    $codex = 220;
-    $codey = $y-6;
+    $codex = $x;
+    $codey = 175;
 } else { // Portrait
     $x = 10;
     $y = 90;
@@ -118,8 +118,8 @@ if ($certificate->orientation == 'L') {
     $brdry = 0;
     $brdrw = 210;
     $brdrh = 297;
-    $codex = 130;
-    $codey = $y-6;
+    $codex = $x;
+    $codey = 245;
 }
 
 function mystrtoupper($s) {
@@ -149,14 +149,9 @@ if ($certificate->printhours) {
     certificate_print_text($pdf, $x, $y + 63, 'C', 'freesans', '', 20, "com carga horária de {$certificate->printhours} na modalidade a distância.");
 }
 certificate_print_text($pdf, $x, $y + 82, 'R', 'freesans', 'B', 14,  "Brasília, " . certificate_get_date($certificate, $certrecord, $course));
-certificate_print_text($pdf, $codex, $codey, 'C', 'freesans', '', 10, 'CÓDIGO DE VALIDAÇÃO');
-certificate_print_text($pdf, $codex, $codey + 5, 'C', 'freesans', 'B', 10, certificate_get_code($certificate, $certrecord));
-certificate_print_text($pdf, $codex, $codey + 10, 'C', 'freesans', '', 10, 'validar em http://saberes.senado.leg.br/');
 
 // Verse page -----------------------------------------------------------------------------------------------------------
 $pdf->AddPage();
-certificate_print_text($pdf, $x, $y + 82, 'R', 'freesans', 'B', 14,  "Brasília, " . certificate_get_date($certificate, $certrecord, $course));
-certificate_print_text($pdf, $x, $codey, 'R', 'freesans', '', 10, 'CÓDIGO DE VALIDAÇÃO: ' . certificate_get_code($certificate, $certrecord));
 // Add images and lines
 certificate_print_image($pdf, $certificate, CERT_IMAGE_BORDER, $brdrx, $brdry, $brdrw, $brdrh);
 certificate_draw_frame($pdf, $certificate);
@@ -165,14 +160,14 @@ $pdf->SetAlpha(0.2);
 certificate_print_image($pdf, $certificate, CERT_IMAGE_WATERMARK, $wmarkx, $wmarky, $wmarkw, $wmarkh);
 $pdf->SetAlpha(1);
 certificate_print_image($pdf, $certificate, CERT_IMAGE_SEAL, $sealx, $sealy, '', '');
-certificate_print_image($pdf, $certificate, CERT_IMAGE_SIGNATURE, $sigx, $sigy, '', '');
 
 // Add text
 $pdf->SetTextColor(0, 0, 0);
-certificate_print_text($pdf, $codex, $codey, 'C', 'freesans', '', 10, 'CÓDIGO DE VALIDAÇÃO');
-certificate_print_text($pdf, $codex, $codey + 5, 'C', 'freesans', 'B', 10, certificate_get_code($certificate, $certrecord));
-certificate_print_text($pdf, $codex, $codey + 10, 'C', 'freesans', '', 10, 'validar em http://saberes.senado.leg.br/');
 certificate_print_text($pdf, $x, $y, 'C', 'freesans', '', 20, 'PROGRAMA DO CURSO');
 certificate_print_text($pdf, $x, $y + 10, 'C', 'freesans', '', 20, mystrtoupper($course->fullname));
 certificate_print_text($pdf, $custx, $custy, 'L', 'freesans', '', 10, $certificate->customtext);
+certificate_print_text($pdf, $codex, $codey, 'C', 'freesans', '', 10, 'CÓDIGO DE VALIDAÇÃO');
+certificate_print_text($pdf, $codex, $codey + 5, 'C', 'freesans', 'B', 12, certificate_get_code($certificate, $certrecord));
+certificate_print_text($pdf, $codex, $codey + 10, 'C', 'freesans', '', 10, 'Para verificar a autenticidade deste certificado, acesse http://saberes.senado.leg.br/ e informe o código acima');
+
 ?>
