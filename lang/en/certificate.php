@@ -202,3 +202,5 @@ $string['viewcertificateviews'] = 'View {$a} issued certificates';
 $string['viewed'] = 'You received this certificate on:';
 $string['viewtranscript'] = 'View Certificates';
 $string['watermark'] = 'Watermark';
+$string['completionrequired'] = "<p><strong>You have not completed the course.</strong></p><br/>
+<p>While the criteria for course completion are not met, the certificate can not be issued.</p>";

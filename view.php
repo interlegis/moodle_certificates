@@ -84,6 +84,12 @@ if ($certificate->requiredtime && !has_capability('mod/certificate:manage', $con
     }
 }
 
+// Check if the user has completed the course
+if (!$completion->is_course_complete($USER->id) && !has_capability('mod/certificate:manage', $context)) {
+    notice(get_string('completionrequired','certificate'), "$CFG->wwwroot/course/view.php?id=$course->id");
+    die;
+}
+
 // Create new certificate record, or return existing record
 $certrecord = certificate_get_issue($course, $USER, $certificate, $cm);
 
