@@ -106,11 +106,6 @@ if ($certificate->orientation == 'L') {
     $codey = 245;
 }
 
-function mystrtoupper($s) {
-  $s = strtoupper($s);
-  return strtr($s, 'áéíóúàèìòùãẽĩõũâêîôûäëïöüç', 'ÁÉÍÓÚÀÈÌÒÙÃẼĨÕŨÂÊÎÔÛÄËÏÖÜÇ');
-}
-
 // Front page ------------------------------------------------------------------------------------------------------------
 // Add images and lines
 certificate_print_image($pdf, $certificate, CERT_IMAGE_BORDER, $brdrx, $brdry, $brdrw, $brdrh);
@@ -126,9 +121,9 @@ certificate_print_image($pdf, $certificate, CERT_IMAGE_SIGNATURE, $sigx, $sigy, 
 $pdf->SetTextColor(0, 0, 0);
 certificate_print_text($pdf, $x, $y, 'C', 'freesans', '', 20, get_string('title', 'certificate'));
 certificate_print_text($pdf, $x, $y + 15, 'C', 'freesans', '', 18, get_string('certify', 'certificate'));
-certificate_print_text($pdf, $x, $y + 25, 'C', 'freesans', 'B', 18, mystrtoupper(fullname($USER)).", CPF nº {$USER->profile['cpf']}");
+certificate_print_text($pdf, $x, $y + 25, 'C', 'freesans', 'B', 18, mb_strtoupper(fullname($USER), 'UTF-8').", CPF nº {$USER->profile['cpf']}");
 certificate_print_text($pdf, $x, $y + 35, 'C', 'freesans', '', 18, "realizou, na modalidade a distância, o curso sem tutoria");
-certificate_print_text($pdf, $x, $y + 45, 'C', 'freesans', 'B', 18, mystrtoupper($course->fullname));
+certificate_print_text($pdf, $x, $y + 45, 'C', 'freesans', 'B', 18, mb_strtoupper($course->fullname, 'UTF-8'));
 certificate_print_text($pdf, $x, $y + 55, 'C', 'freesans', '', 18, "no período de {$start_date} a {$end_date}");
 if ($certificate->printhours) {
     certificate_print_text($pdf, $x, $y + 65, 'C', 'freesans', '', 18, "com carga horária de {$certificate->printhours}");
@@ -150,7 +145,7 @@ certificate_print_image($pdf, $certificate, CERT_IMAGE_SEAL, $sealx, $sealy, '',
 // Add text
 $pdf->SetTextColor(0, 0, 0);
 certificate_print_text($pdf, $x, $y, 'C', 'freesans', '', 20, 'PROGRAMA DO CURSO');
-certificate_print_text($pdf, $x, $y + 10, 'C', 'freesans', '', 20, mystrtoupper($course->fullname));
+certificate_print_text($pdf, $x, $y + 10, 'C', 'freesans', '', 20, mb_strtoupper($course->fullname, 'UTF-8'));
 certificate_print_text($pdf, $custx, $custy, 'L', 'freesans', '', 10, $certificate->customtext);
 certificate_print_text($pdf, $codex, $codey, 'C', 'freesans', '', 10, 'CÓDIGO DE VALIDAÇÃO');
 certificate_print_text($pdf, $codex, $codey + 5, 'C', 'freesans', 'B', 12, certificate_get_code($certificate, $certrecord));
