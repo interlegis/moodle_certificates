@@ -44,12 +44,11 @@ if (!$certificate = $DB->get_record('certificate', array('id'=> $cm->instance)))
     print_error('course module is incorrect');
 }
 
-// Requires a course login
-require_course_login($course->id, true, $cm);
+// Requires login
+require_login();
 
 // Check the capabilities
 $context = context_module::instance($cm->id);
-require_capability('mod/certificate:view', $context);
 
 // Initialize $PAGE, compute blocks
 $PAGE->set_url('/mod/certificate/review.php', array('id' => $cm->id));
