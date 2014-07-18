@@ -262,6 +262,54 @@ function certificate_supports($feature) {
  * TODO:This needs to be done
  */
 function certificate_cron () {
+    global $DB;
+
+    $sql = "select distinct cm.id as cmid, c.*, ce.id as certificateid, ce.name as certificatename
+            from {certificate} ce
+              inner join {course} c on c.id = ce.course
+              inner join {course_modules} cm on cm.course = c.id and cm.instance = ce.id and cm.module = ?
+            where c.visible = 1
+            order by c.id";
+
+    echo "\n\nGenerate certificates for user that has completed the course-------------------------\n";
+
+    $certmodule = $DB->get_record('modules', array('name' => 'certificate'));
+    $courses = $DB->get_records_sql($sql, array($certmodule->id));
+
+    $sql = "select u.*
+            from {course_completions} cc
+              inner join {user} u on u.id = cc.userid
+            where cc.course = ?
+              and cc.timecompleted is not null
+              and cc.userid not in (select ci.userid
+                                    from {certificate_issues} ci
+                                    where ci.certificateid = ?)
+            order by u.firstname";
+
+    foreach ($courses as $course) {
+        echo "    Processing course {$course->fullname}, certificate: {$course->certificatename}...\n";
+        $students = $DB->get_records_sql($sql, array($course->id, $course->certificateid));
+        $total = count($students);
+
+        if ($total > 0) {
+            echo "        {$total} students without certificate found, generating certificates for them...\n";
+            $certificate = $DB->get_record('certificate', array('id' => $course->certificateid));
+            $cm = get_coursemodule_from_id('certificate', $course->cmid);
+            foreach ($students as $student) {
+                if (!$certificate->requiredtime or 
+                   (certificate_get_course_time($course->id) >= ($certificate->requiredtime * 60))) {
+                    echo "            generating issue certificate for {$student->firstname} {$student->lastname}...";
+                    $certrecord = certificate_get_issue($course, $student, $certificate, $cm);
+                    echo " Done! Certificate {$certrecord->code} generated!\n";
+                } else {
+                    echo "            {$student->firstname} {$student->lastname} has not required course time. Skiped!\n";
+               }
+            }
+        } else {
+            echo "        No students without certificate found! Course skipped.\n";
+        }
+    }
+    
     return true;
 }
 
