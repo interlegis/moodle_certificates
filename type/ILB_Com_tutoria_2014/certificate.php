@@ -36,7 +36,7 @@ if (!defined('MOODLE_INTERNAL')) {
 require_once("$CFG->dirroot/completion/completion_completion.php");
 
 $start_date = $course->startdate;
-$end_date   = $start_date + 60 * 24 * 60 * 60; // 60 days * 24 hours * 60 min * 60 sec;
+$end_date   = $start_date + 40 * 24 * 60 * 60; // 40 days * 24 hours * 60 min * 60 sec; ugly hack!
 
 $fmt = '%d/%m/%Y'; // Default format
 if ($certificate->datefmt == 1) {
