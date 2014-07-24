@@ -45,9 +45,9 @@ if ($certificate->datefmt == 1) {
     $suffix = certificate_get_ordinal_number_suffix(userdate($ts, '%d'));
     $fmt = '%B %d' . $suffix . ', %Y';
 } else if ($certificate->datefmt == 3) {
-    $fmt = '%d %B %Y';
+    $fmt = '%d de %B de %Y';
 } else if ($certificate->datefmt == 4) {
-    $fmt = '%B %Y';
+    $fmt = '%B de %Y';
 } else if ($certificate->datefmt == 5) {
     $fmt = get_string('strftimedate', 'langconfig');
 }
@@ -120,7 +120,7 @@ certificate_print_image($pdf, $certificate, CERT_IMAGE_SIGNATURE, $sigx, $sigy, 
 $pdf->SetTextColor(0, 0, 0);
 certificate_print_text($pdf, $x, $y, 'C', 'freesans', '', 20, get_string('title', 'certificate'));
 certificate_print_text($pdf, $x, $y + 15, 'C', 'freesans', '', 18, get_string('certify', 'certificate'));
-certificate_print_text($pdf, $x, $y + 25, 'C', 'freesans', 'B', 18, mb_strtoupper(fullname($USER), 'UTF-8').", CPF nº {$USER->profile['cpf']}");
+certificate_print_text($pdf, $x, $y + 25, 'C', 'freesans', 'B', 18, mb_strtoupper(fullname($USER), 'UTF-8').", CPF nº {$USER->profile['cpf']},");
 certificate_print_text($pdf, $x, $y + 35, 'C', 'freesans', '', 18, "realizou, na modalidade a distância, o curso com tutoria");
 certificate_print_text($pdf, $x, $y + 45, 'C', 'freesans', 'B', 18, mb_strtoupper($course->fullname, 'UTF-8'));
 certificate_print_text($pdf, $x, $y + 55, 'C', 'freesans', '', 18, "no período de {$start_date} a {$end_date}");
@@ -128,7 +128,7 @@ if ($certificate->printhours) {
     certificate_print_text($pdf, $x, $y + 65, 'C', 'freesans', '', 18, "com carga horária de {$certificate->printhours}");
 }
 certificate_print_text($pdf, $x, $y + 75, 'C', 'freesans', '', 18, certificate_get_grade($certificate, $course));
-certificate_print_text($pdf, $x, $y + 85, 'R', 'freesans', 'B', 14,  "Brasília, " . certificate_get_date($certificate, $certrecord, $course));
+certificate_print_text($pdf, $x, $y + 85, 'R', 'freesans', 'B', 14,  "Brasília, " . certificate_get_date($certificate, $certrecord, $course) . '.');
 
 // Verse page -----------------------------------------------------------------------------------------------------------
 $pdf->AddPage();
