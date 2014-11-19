@@ -1513,6 +1513,18 @@ function certificate_print_image($pdf, $certificate, $type, $x, $y, $w, $h) {
     }
 }
 
+function custom_random_string($length=15) {
+    $pool = 'ABCDEFGHJKMNOPQRSTUVWXYZ';
+    $pool .= 'abcdefghjkmnopqrstuvwxyz';
+    $pool .= '0123456789';
+    $poollen = strlen($pool);
+    $string = '';
+    for($i=0; $i < $length; $i++) {
+        $string .= substr($pool, (mt_rand()%($poollen)), 1);
+    }
+    return $string;
+}
+
 /**
  * Generates a 10-digit code of random letters and numbers.
  *
@@ -1522,12 +1534,12 @@ function certificate_generate_code() {
     global $DB;
 
     $uniquecodefound = false;
-    $code = random_string(10);
+    $code = custom_random_string(10);
     while (!$uniquecodefound) {
         if (!$DB->record_exists('certificate_issues', array('code' => $code))) {
             $uniquecodefound = true;
         } else {
-            $code = random_string(10);
+            $code = custom_random_string(10);
         }
     }
 
