@@ -121,7 +121,7 @@ $pdf->SetTextColor(0, 0, 0);
 certificate_print_text($pdf, $x, $y, 'C', 'freesans', '', 20, get_string('title', 'certificate'));
 certificate_print_text($pdf, $x, $y + 25, 'C', 'freesans', '', 18, get_string('certify', 'certificate'));
 certificate_print_text($pdf, $x, $y + 35, 'C', 'freesans', 'B', 18, mb_strtoupper(fullname($USER), 'UTF-8').", CPF nº {$USER->profile['cpf']},");
-certificate_print_text($pdf, $x, $y + 45, 'C', 'freesans', '', 18, "concluiu com aproveitamento o curso");
+certificate_print_text($pdf, $x, $y + 45, 'C', 'freesans', '', 18, "concluiu com aproveitamento o");
 certificate_print_text($pdf, $x, $y + 55, 'C', 'freesans', 'B', 18, mb_strtoupper($course->fullname, 'UTF-8'));
 certificate_print_text($pdf, $x, $y + 65, 'C', 'freesans', '', 18, "com carga horária de 129 horas/aula.");
 
@@ -141,7 +141,7 @@ certificate_print_image($pdf, $certificate, CERT_IMAGE_SEAL, $sealx, $sealy, '',
 
 // Add text
 $pdf->SetTextColor(0, 0, 0);
-certificate_print_text($pdf, $x, $y, 'C', 'freesans', '', 20, 'PROGRAMA DO CURSO');
+certificate_print_text($pdf, $x, $y, 'C', 'freesans', '', 20, 'CONTEÚDO PROGRAMÁTICO DO');
 certificate_print_text($pdf, $x, $y + 10, 'C', 'freesans', '', 20, mb_strtoupper($course->fullname, 'UTF-8'));
 certificate_print_text($pdf, $custx, $custy, 'L', 'freesans', '', 10, $certificate->customtext);
 certificate_print_text($pdf, $codex, $codey, 'C', 'freesans', '', 10, 'CÓDIGO DE VALIDAÇÃO');
