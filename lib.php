@@ -1197,7 +1197,7 @@ function certificate_get_date($certificate, $certrecord, $course, $userid = null
             $suffix = certificate_get_ordinal_number_suffix(userdate($date, '%d'));
             $certificatedate = userdate($date, '%B %d' . $suffix . ', %Y');
         } else if ($certificate->datefmt == 3) {
-            $certificatedate = userdate($date, '%d %B %Y');
+            $certificatedate = userdate($date, '%d de %B de %Y');
         } else if ($certificate->datefmt == 4) {
             $certificatedate = userdate($date, '%B %Y');
         } else if ($certificate->datefmt == 5) {
