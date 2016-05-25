@@ -36,7 +36,7 @@ if (!defined('MOODLE_INTERNAL')) {
 require_once("$CFG->dirroot/completion/completion_completion.php");
 $cc = new completion_completion(array('userid'=>$USER->id, 'course'=>$course->id));
 
-$start_date = $cc->startdate;
+$start_date = $course->startdate;
 $end_date   = $cc->timecompleted;
 
 $fmt = '%d/%m/%Y'; // Default format
