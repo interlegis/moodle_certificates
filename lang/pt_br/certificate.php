@@ -202,5 +202,5 @@ $string['viewcertificateviews'] = 'View {$a} issued certificates';
 $string['viewed'] = 'You received this certificate on:';
 $string['viewtranscript'] = 'View Certificates';
 $string['watermark'] = 'Watermark';
-$string['completionrequired'] = "<p><strong>Você não completou o curso.</strong></p><br/>
-<p>Enquanto os critérios de conclusão de curso não forem preenchidos, o certificado não pode ser gerado.</p>";
+$string['completionrequired'] = '<p><strong>Você não completou o curso.</strong></p><br/>
+<p>Enquanto os critérios de conclusão de curso não forem preenchidos, o certificado não pode ser gerado.</p>';
