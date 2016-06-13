@@ -37,6 +37,8 @@ require_once("$CFG->dirroot/completion/completion_completion.php");
 
 $start_date = $course->startdate;
 $end_date   = $start_date + 39 * 24 * 60 * 60; // 40 days * 24 hours * 60 min * 60 sec; ugly hack!
+$emissao_date   = $start_date + 40 * 24 * 60 * 60; // dia seguinte ao término; very ugly hack!
+
 
 $fmt = '%d/%m/%Y'; // Default format
 if ($certificate->datefmt == 1) {
@@ -53,6 +55,8 @@ if ($certificate->datefmt == 1) {
 }
 $start_date = userdate($start_date, $fmt);
 $end_date = userdate($end_date, $fmt);
+$emissao_date = userdate($emissao_date, $fmt);
+
 
 $pdf = new PDF($certificate->orientation, 'mm', 'A4', true, 'UTF-8', false);
 
@@ -128,7 +132,8 @@ if ($certificate->printhours) {
     certificate_print_text($pdf, $x, $y + 65, 'C', 'freesans', '', 18, "com carga horária de {$certificate->printhours}");
 }
 certificate_print_text($pdf, $x, $y + 75, 'C', 'freesans', '', 18, certificate_get_grade($certificate, $course));
-certificate_print_text($pdf, $x, $y + 85, 'R', 'freesans', 'B', 14,  "Brasília, " . certificate_get_date($certificate, $certrecord, $course) . '.');
+certificate_print_text($pdf, $x, $y + 85, 'R', 'freesans', 'B', 14,  "Brasília, {$emissao_date}.");
+
 
 // Verse page -----------------------------------------------------------------------------------------------------------
 $pdf->AddPage();
