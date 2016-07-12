@@ -46,7 +46,7 @@ if ($certificate->datefmt == 1) {
     $suffix = certificate_get_ordinal_number_suffix(userdate($ts, '%d'));
     $fmt = '%B %d' . $suffix . ', %Y';
 } else if ($certificate->datefmt == 3) {
-    $fmt = '%d %B %Y';
+    $fmt = '%d de %B de %Y';
 } else if ($certificate->datefmt == 4) {
     $fmt = '%B %Y';
 } else if ($certificate->datefmt == 5) {
@@ -129,7 +129,7 @@ if ($certificate->printhours) {
     certificate_print_text($pdf, $x, $y + 65, 'C', 'freesans', '', 18, "com carga horária de {$certificate->printhours}");
 }
 certificate_print_text($pdf, $x, $y + 75, 'C', 'freesans', '', 18, certificate_get_grade($certificate, $course));
-certificate_print_text($pdf, $x, $y + 85, 'R', 'freesans', 'B', 14,  "Brasília, " . certificate_get_date($certificate, $certrecord, $course));
+certificate_print_text($pdf, $x, $y + 85, 'R', 'freesans', 'B', 14,  "Brasília, " . $end_date);
 
 // Verse page -----------------------------------------------------------------------------------------------------------
 $pdf->AddPage();
