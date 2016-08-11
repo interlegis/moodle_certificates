@@ -123,7 +123,7 @@ certificate_print_text($pdf, $x, $y + 25, 'C', 'freesans', '', 18, get_string('c
 certificate_print_text($pdf, $x, $y + 35, 'C', 'freesans', 'B', 18, mb_strtoupper(fullname($USER), 'UTF-8').", CPF nº {$USER->profile['cpf']},");
 certificate_print_text($pdf, $x, $y + 45, 'C', 'freesans', '', 18, "concluiu com aproveitamento o");
 certificate_print_text($pdf, $x, $y + 55, 'C', 'freesans', 'B', 18, mb_strtoupper($course->fullname, 'UTF-8'));
-certificate_print_text($pdf, $x, $y + 65, 'C', 'freesans', '', 18, "com carga horária de 70 horas/aula.");
+certificate_print_text($pdf, $x, $y + 65, 'C', 'freesans', '', 18, "com carga horária de {$certificate->printhours}.");
 
 
 certificate_print_text($pdf, $x, $y + 85, 'C', 'freesans', 'B', 14,  "Brasília, " . certificate_get_date($certificate, $certrecord, $course) . '.');
