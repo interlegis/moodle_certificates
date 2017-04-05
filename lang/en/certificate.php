@@ -60,6 +60,7 @@ The non-embedded types use the Helvetica and Times fonts.  If you feel your user
 
 New type folders can be added to the certificate/type folder. The name of the folder and any new language strings for the new type must be added to the certificate language file.';
 $string['certify'] = 'This is to certify that';
+$string['certifyilb'] = 'This is to certify that';
 $string['code'] = 'Code';
 $string['completiondate'] = 'Course Completion';
 $string['course'] = 'For';
