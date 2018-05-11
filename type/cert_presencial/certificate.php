@@ -32,14 +32,29 @@ $group = end(groups_get_all_groups($course->id, $USER->id));
 $group_name = format_string($group->name);
 $group_description = format_text($group->description, $group->descriptiontext);
 
-#Obtem a nota do aluno, se o curso estiver configurado para gerar 
-#certificado com nota. Do contrário, o campo virá sempre em branco.
-$grade=certificate_get_grade($certificate, $course);
-if( $grade != '' ) {
-  #Se houver nota, acrescenta vírgulas antes e depois
-  $grade = $grade . ', ';
+//MASK para CPF
+function mask($val, $mask)
+{
+    $maskared = '';
+    $k = 0;
+    for($i = 0; $i<=strlen($mask)-1; $i++){
+    
+        if($mask[$i] == '#'){
+            if(isset($val[$k]))
+            $maskared .= $val[$k++];
+            }
+        else
+        {
+            if(isset($mask[$i]))
+            $maskared .= $mask[$i];
+        }
+    }
+return $maskared;
 }
 
+$cpf = mask($USER->username, '###.###.###-##');
+
+require_once($CFG->dirroot.'/user/profile/field/cpf/field.class.php');
 
 /*
 $style = <<<EOT
@@ -51,6 +66,16 @@ $style = <<<EOT
 </style>
 EOT
 */
+
+
+#Obtem a nota do aluno, se o curso estiver configurado para gerar 
+#certificado com nota. Do contrário, o campo virá sempre em branco.
+$grade=certificate_get_grade($certificate, $course);
+if( $grade != '' ) {
+  #Se houver nota, acrescenta vírgulas antes e depois
+  $grade = $grade . ', ';
+}
+
 $pdf = new PDF($certificate->orientation, 'mm', 'A4', true, 'UTF-8', false);
 
 $pdf->SetTitle($certificate->name);
@@ -117,8 +142,9 @@ certificate_print_image($pdf, $certificate, CERT_IMAGE_SIGNATURE, $sigx, $sigy, 
 $pdf->SetTextColor(0, 0, 0);
 certificate_print_text($pdf, $x, $y, 'C', 'freesans', '', 20, get_string('title', 'certificate'));
 certificate_print_text($pdf, $x, $y + 15, 'C', 'freesans', '', 18, get_string('certify', 'certificate'));
-certificate_print_text($pdf, $x, $y + 25, 'C', 'freesans', 'B', 18, mb_strtoupper(fullname($USER), 'UTF-8').", CPF nº {$USER->profile['cpf']}");
-certificate_print_text($pdf, $x, $y + 35, 'C', 'freesans', '', 18, "realizou, na modalidade presencial, " . $grade . "o curso");
+//certificate_print_text($pdf, $x, $y + 25, 'C', 'freesans', 'B', 18, mb_strtoupper(fullname($USER), 'UTF-8').", CPF nº {$USER->profile['cpf']}");
+certificate_print_text($pdf, $x, $y + 25, 'C', 'freesans', 'B', 18, mb_strtoupper(fullname($USER), 'UTF-8').", CPF nº $cpf");
+certificate_print_text($pdf, $x, $y + 35, 'C', 'freesans', '', 18, "realizou, na modalidade presencial, ". $grade ."o curso");
 certificate_print_text($pdf, $x, $y + 45, 'C', 'freesans', 'B', 18, mb_strtoupper($course->fullname, 'UTF-8'));
 $tagvs = array('p' => array(0 => array('h' => 0, 'n' => 0), 1 => array('h' => 0, 'n'=> 0)));
 $pdf->setHtmlVSpace($tagvs);

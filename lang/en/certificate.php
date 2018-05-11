@@ -18,8 +18,7 @@
 /**
  * Language strings for the certificate module
  *
- * @package    mod
- * @subpackage certificate
+ * @package    mod_certificate
  * @copyright  Mark Nelson <markn@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -63,12 +62,14 @@ $string['certify'] = 'This is to certify that';
 $string['certifyilb'] = 'This is to certify that';
 $string['code'] = 'Code';
 $string['completiondate'] = 'Course Completion';
+$string['completionrequired'] = '<p><strong>You have not completed the course.</strong></p><br/>/n<p>While the criteria for course completion are not met, the certificate can not be issued.</p>';
 $string['course'] = 'For';
 $string['coursegrade'] = 'Course Grade';
 $string['coursename'] = 'Course';
 $string['coursetimereq'] = 'Required minutes in course';
 $string['coursetimereq_help'] = 'Enter here the minimum amount of time, in minutes, that a student must be logged into the course before they will be able to receive the certificate.';
 $string['credithours'] = 'Credit Hours';
+$string['crontask'] = 'Update users to generate certificates';
 $string['customtext'] = 'Custom Text';
 $string['customtext_help'] = 'If you want the certificate to print different names for the teacher than those who are assigned
 the role of teacher, do not select Print Teacher or any signature image except for the line image.  Enter the teacher names in this text box as you would like them to appear.  By default, this text is placed in the lower left of the certificate. The following html tags are available: &lt;br&gt;, &lt;p&gt;, &lt;b&gt;, &lt;i&gt;, &lt;u&gt;, &lt;img&gt; (src and width (or height) are mandatory), &lt;a&gt; (href is mandatory), &lt;font&gt; (possible attributes are: color, (hex color code), face, (arial, times, courier, helvetica, symbol)).';
@@ -85,7 +86,7 @@ Email Certificate: Choosing this option sends the certificate to the student as 
 After a user receives their certificate, if they click on the certificate link from the course homepage, they will see the date they received their certificate and will be able to review their received certificate.';
 $string['designoptions'] = 'Design Options';
 $string['download'] = 'Force download';
-$string['emailcertificate'] = 'Email (Must also choose save!)';
+$string['emailcertificate'] = 'Email';
 $string['emailothers'] = 'Email Others';
 $string['emailothers_help'] = 'Enter the email addresses here, separated by a comma, of those who should be alerted with an email whenever students receive a certificate.';
 $string['emailstudenttext'] = 'Attached is your certificate for {$a->course}.';
@@ -106,6 +107,10 @@ You can review it here:
 
     <a href="{$a->url}">Certificate Report</a>.';
 $string['entercode'] = 'Enter certificate code to verify:';
+$string['fontsans'] = 'Sans-serif font family';
+$string['fontsans_desc'] = 'Sans-serif font family for certificates with embedded fonts';
+$string['fontserif'] = 'Serif font family';
+$string['fontserif_desc'] = 'Serif font family for certificates with embedded fonts';
 $string['getcertificate'] = 'Get your certificate';
 $string['grade'] = 'Grade';
 $string['gradedate'] = 'Grade Date';
@@ -119,7 +124,7 @@ $string['gradeletter'] = 'Letter Grade';
 $string['gradepercent'] = 'Percentage Grade';
 $string['gradepoints'] = 'Points Grade';
 $string['imagetype'] = 'Image Type';
-$string['incompletemessage'] = 'In order to download your certificate, you must first complete all required '.'activities. Please return to the course to complete your coursework.';
+$string['incompletemessage'] = 'In order to download your certificate, you must first complete all required activities. Please return to the course to complete your coursework.';
 $string['intro'] = 'Introduction';
 $string['issueoptions'] = 'Issue Options';
 $string['issued'] = 'Issued';
@@ -129,6 +134,8 @@ $string['lastviewed'] = 'You last received this certificate on:';
 $string['letter'] = 'Letter';
 $string['lockingoptions'] = 'Locking Options';
 $string['modulename'] = 'Certificate';
+$string['modulename_help'] = 'This module allows for the dynamic generation of certificates based on predefined conditions set by the teacher.';
+$string['modulename_link'] = 'Certificate_module';
 $string['modulenameplural'] = 'Certificates';
 $string['mycertificates'] = 'My Certificates';
 $string['nocertificates'] = 'There are no certificates';
@@ -185,7 +192,7 @@ $string['seal'] = 'Seal';
 $string['sigline'] = 'line';
 $string['signature'] = 'Signature';
 $string['statement'] = 'has completed the course';
-$string['summaryofattempts'] = 'Summary of Previously Received Certificates';
+$string['summaryofattempts'] = 'Summary of previously received certificates';
 $string['textoptions'] = 'Text Options';
 $string['title'] = 'CERTIFICATE of ACHIEVEMENT';
 $string['to'] = 'Awarded to';
@@ -203,5 +210,3 @@ $string['viewcertificateviews'] = 'View {$a} issued certificates';
 $string['viewed'] = 'You received this certificate on:';
 $string['viewtranscript'] = 'View Certificates';
 $string['watermark'] = 'Watermark';
-$string['completionrequired'] = "<p><strong>You have not completed the course.</strong></p><br/>
-<p>While the criteria for course completion are not met, the certificate can not be issued.</p>";

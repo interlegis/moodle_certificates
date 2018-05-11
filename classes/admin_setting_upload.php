@@ -16,24 +16,31 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Provides some custom settings for the certificate module
+ * Creates an upload form on the settings page
  *
  * @package    mod_certificate
  * @copyright  Michael Avelar <michaela@moodlerooms.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
+defined('MOODLE_INTERNAL') || die();
 
-if ($ADMIN->fulltree) {
+require_once($CFG->libdir.'/adminlib.php');
 
-    $settings->add(new mod_certificate_admin_setting_upload('certificate/uploadimage',
-        get_string('uploadimage', 'mod_certificate'), get_string('uploadimagedesc', 'certificate'), ''));
+/**
+ * Class extends admin setting class to allow/process an uploaded file
+ **/
+class mod_certificate_admin_setting_upload extends admin_setting_configtext {
+    public function __construct($name, $visiblename, $description, $defaultsetting) {
+        parent::__construct($name, $visiblename, $description, $defaultsetting, PARAM_RAW, 50);
+    }
 
-    $settings->add(new mod_certificate_admin_setting_font('certificate/fontsans',
-        get_string('fontsans', 'mod_certificate'), get_string('fontsans_desc', 'mod_certificate'), 'freesans'));
+    function output_html($data, $query='') {
+        // Create a dummy var for this field.
+        $this->config_write($this->name, '');
 
-    $settings->add(new mod_certificate_admin_setting_font('certificate/fontserif',
-        get_string('fontserif', 'mod_certificate'), get_string('fontserif_desc', 'mod_certificate'), 'freeserif'));
-
+        return format_admin_setting($this, $this->visiblename,
+            html_writer::link(new moodle_url('/mod/certificate/upload_image.php'), get_string('upload')),
+            $this->description, true, '', null, $query);
+    }
 }

@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package moodlecore
+ * @package    mod_certificate
  * @subpackage backup-moodle2
  * @copyright 2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -69,6 +69,9 @@ class restore_certificate_activity_structure_step extends restore_activity_struc
 
         $data->certificateid = $this->get_new_parentid('certificate');
         $data->timecreated = $this->apply_date_offset($data->timecreated);
+        if ($data->userid > 0) {
+            $data->userid = $this->get_mappingid('user', $data->userid);
+        }
 
         $newitemid = $DB->insert_record('certificate_issues', $data);
         $this->set_mapping('certificate_issue', $oldid, $newitemid);

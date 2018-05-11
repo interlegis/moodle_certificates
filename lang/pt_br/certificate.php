@@ -69,6 +69,7 @@ $string['coursename'] = 'Course';
 $string['coursetimereq'] = 'Required minutes in course';
 $string['coursetimereq_help'] = 'Enter here the minimum amount of time, in minutes, that a student must be logged into the course before they will be able to receive the certificate.';
 $string['credithours'] = 'Credit Hours';
+$string['crontask'] = 'Atualizar usuários para gerar certificados';
 $string['customtext'] = 'Custom Text';
 $string['customtext_help'] = 'If you want the certificate to print different names for the teacher than those who are assigned
 the role of teacher, do not select Print Teacher or any signature image except for the line image.  Enter the teacher names in this text box as you would like them to appear.  By default, this text is placed in the lower left of the certificate. The following html tags are available: &lt;br&gt;, &lt;p&gt;, &lt;b&gt;, &lt;i&gt;, &lt;u&gt;, &lt;img&gt; (src and width (or height) are mandatory), &lt;a&gt; (href is mandatory), &lt;font&gt; (possible attributes are: color, (hex color code), face, (arial, times, courier, helvetica, symbol)).';

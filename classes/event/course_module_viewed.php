@@ -16,19 +16,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Code fragment to define the version of the certificate module
+ * This page lists all the instances of certificate in a particular course
  *
- * @package    mod_certificate
+ * @package    mod
+ * @subpackage certificate
  * @copyright  Mark Nelson <markn@moodle.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or late
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+namespace mod_certificate\event;
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2018040201; // The current module version (Date: YYYYMMDDXX)
-$plugin->requires  = 2016052300; // Requires this Moodle version (3.1)
-$plugin->cron      = 12*60*20; // Period for cron to check this module (secs)
-$plugin->component = 'mod_certificate';
-
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = "Master (Build: 2018040201)"; // User-friendly version number
+class course_module_viewed extends \core\event\course_module_viewed {
+    protected function init() {
+        $this->data['objecttable'] = 'certificate';
+        parent::init();
+    }
+}

@@ -57,6 +57,30 @@ $start_date = userdate($start_date, $fmt);
 $end_date = userdate($end_date, $fmt);
 $emissao_date = userdate($emissao_date, $fmt);
 
+//MASK para CPF
+function mask($val, $mask)
+{
+    $maskared = '';
+    $k = 0;
+    for($i = 0; $i<=strlen($mask)-1; $i++){
+    
+        if($mask[$i] == '#'){
+            if(isset($val[$k]))
+            $maskared .= $val[$k++];
+            }
+        else
+        {
+            if(isset($mask[$i]))
+            $maskared .= $mask[$i];
+        }
+    }
+return $maskared;
+}
+
+$cpf = mask($USER->username, '###.###.###-##');
+
+require_once($CFG->dirroot.'/user/profile/field/cpf/field.class.php');
+
 
 $pdf = new PDF($certificate->orientation, 'mm', 'A4', true, 'UTF-8', false);
 
@@ -124,7 +148,7 @@ certificate_print_image($pdf, $certificate, CERT_IMAGE_SIGNATURE, $sigx, $sigy, 
 $pdf->SetTextColor(0, 0, 0);
 certificate_print_text($pdf, $x, $y, 'C', 'freesans', '', 20, get_string('title', 'certificate'));
 certificate_print_text($pdf, $x, $y + 15, 'C', 'freesans', '', 18, get_string('certify', 'certificate'));
-certificate_print_text($pdf, $x, $y + 25, 'C', 'freesans', 'B', 18, mb_strtoupper(fullname($USER), 'UTF-8').", CPF nº {$USER->profile['cpf']},");
+certificate_print_text($pdf, $x, $y + 25, 'C', 'freesans', 'B', 18, mb_strtoupper(fullname($USER), 'UTF-8').", CPF nº $cpf");
 certificate_print_text($pdf, $x, $y + 35, 'C', 'freesans', '', 18, "realizou, na modalidade a distância, o curso com tutoria");
 certificate_print_text($pdf, $x, $y + 45, 'C', 'freesans', 'B', 18, mb_strtoupper($course->fullname, 'UTF-8'));
 certificate_print_text($pdf, $x, $y + 55, 'C', 'freesans', '', 18, "no período de {$start_date} a {$end_date}");

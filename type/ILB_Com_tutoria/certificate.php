@@ -34,14 +34,10 @@ if (!defined('MOODLE_INTERNAL')) {
  * Finally format them to print
  */
 require_once("$CFG->dirroot/completion/completion_completion.php");
-require_once("$CFG->dirroot/enrol/locallib.php");
-$cc = new completion_completion(array('userid'=>$USER->id, 'course'=>$course->id));
 
-$enrol_manager = new course_enrolment_manager($PAGE, $course);
-$user_enrol = end($enrol_manager->get_user_enrolments($USER->id));
-
-$start_date = $user_enrol->timestart;
-$end_date   = $cc->timecompleted;
+$start_date = $course->startdate;
+$end_date   = $course->enddate;
+$emissao_date   = $course->enddate;
 
 $fmt = '%d/%m/%Y'; // Default format
 if ($certificate->datefmt == 1) {
@@ -52,12 +48,14 @@ if ($certificate->datefmt == 1) {
 } else if ($certificate->datefmt == 3) {
     $fmt = '%d de %B de %Y';
 } else if ($certificate->datefmt == 4) {
-    $fmt = '%B %Y';
+    $fmt = '%B de %Y';
 } else if ($certificate->datefmt == 5) {
     $fmt = get_string('strftimedate', 'langconfig');
 }
+
 $start_date = userdate($start_date, $fmt);
 $end_date = userdate($end_date, $fmt);
+$emissao_date = userdate($emissao_date, $fmt);
 
 //MASK para CPF
 function mask($val, $mask)
@@ -82,6 +80,7 @@ return $maskared;
 $cpf = mask($USER->username, '###.###.###-##');
 
 require_once($CFG->dirroot.'/user/profile/field/cpf/field.class.php');
+
 
 $pdf = new PDF($certificate->orientation, 'mm', 'A4', true, 'UTF-8', false);
 
@@ -150,14 +149,15 @@ $pdf->SetTextColor(0, 0, 0);
 certificate_print_text($pdf, $x, $y, 'C', 'freesans', '', 20, get_string('title', 'certificate'));
 certificate_print_text($pdf, $x, $y + 15, 'C', 'freesans', '', 18, get_string('certify', 'certificate'));
 certificate_print_text($pdf, $x, $y + 25, 'C', 'freesans', 'B', 18, mb_strtoupper(fullname($USER), 'UTF-8').", CPF nº $cpf");
-certificate_print_text($pdf, $x, $y + 35, 'C', 'freesans', '', 18, "realizou, na modalidade a distância, o curso sem tutoria");
+certificate_print_text($pdf, $x, $y + 35, 'C', 'freesans', '', 18, "realizou, na modalidade a distância, o curso com tutoria");
 certificate_print_text($pdf, $x, $y + 45, 'C', 'freesans', 'B', 18, mb_strtoupper($course->fullname, 'UTF-8'));
 certificate_print_text($pdf, $x, $y + 55, 'C', 'freesans', '', 18, "no período de {$start_date} a {$end_date}");
 if ($certificate->printhours) {
     certificate_print_text($pdf, $x, $y + 65, 'C', 'freesans', '', 18, "com carga horária de {$certificate->printhours}");
 }
 certificate_print_text($pdf, $x, $y + 75, 'C', 'freesans', '', 18, certificate_get_grade($certificate, $course));
-certificate_print_text($pdf, $x, $y + 85, 'R', 'freesans', 'B', 14,  "Brasília, " . $end_date);
+certificate_print_text($pdf, $x, $y + 85, 'R', 'freesans', 'B', 14,  "Brasília, {$emissao_date}.");
+
 
 // Verse page -----------------------------------------------------------------------------------------------------------
 $pdf->AddPage();

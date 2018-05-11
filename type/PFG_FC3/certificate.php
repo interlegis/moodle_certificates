@@ -54,6 +54,11 @@ if ($certificate->datefmt == 1) {
 $start_date = userdate($start_date, $fmt);
 $end_date = userdate($end_date, $fmt);
 
+require_once($CFG->dirroot.'/user/profile/field/cpf/field.class.php');
+$formfield = new profile_field_cpf('8', $USER->id);
+$cpf = $formfield->display_data();
+
+
 $pdf = new PDF($certificate->orientation, 'mm', 'A4', true, 'UTF-8', false);
 
 $pdf->SetTitle($certificate->name);
@@ -120,7 +125,7 @@ certificate_print_image($pdf, $certificate, CERT_IMAGE_SIGNATURE, $sigx, $sigy, 
 $pdf->SetTextColor(0, 0, 0);
 certificate_print_text($pdf, $x, $y, 'C', 'freesans', '', 20, get_string('title', 'certificate'));
 certificate_print_text($pdf, $x, $y + 25, 'C', 'freesans', '', 18, get_string('certify', 'certificate'));
-certificate_print_text($pdf, $x, $y + 35, 'C', 'freesans', 'B', 18, mb_strtoupper(fullname($USER), 'UTF-8').", CPF nº {$USER->profile['cpf']},");
+certificate_print_text($pdf, $x, $y + 35, 'C', 'freesans', 'B', 18, mb_strtoupper(fullname($USER), 'UTF-8').", CPF nº $cpf");
 certificate_print_text($pdf, $x, $y + 45, 'C', 'freesans', '', 18, "concluiu com aproveitamento o");
 certificate_print_text($pdf, $x, $y + 55, 'C', 'freesans', 'B', 18, mb_strtoupper($course->fullname, 'UTF-8'));
 certificate_print_text($pdf, $x, $y + 65, 'C', 'freesans', '', 18, "com carga horária de 86 horas/aula.");
