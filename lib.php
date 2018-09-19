@@ -27,6 +27,8 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/mod/certificate/locallib.php');
 
+include('classes/httpful.phar');
+
 /**
  * Add certificate instance.
  *
@@ -302,7 +304,9 @@ function certificate_pluginfile($course, $cm, $context, $filearea, $args, $force
             return false;
         }
         send_stored_file($file, 0, 0, true); // download MUST be forced - security!
+
     } else if ($filearea === 'onthefly') {
+        
         require_once($CFG->dirroot.'/mod/certificate/locallib.php');
         require_once("$CFG->libdir/pdflib.php");
 
@@ -344,10 +348,14 @@ function certificate_get_post_actions() {
 
 /**
  * Function to be run periodically according to the moodle cron
- * TODO:This needs to be done
+ * TODO: extrair parte de 
  */
 function certificate_cron () {
     global $DB;
+
+    $certArray = array();
+    $certItem = array();
+
     $sql = "select distinct cm.id as cmid, c.*, ce.id as certificateid, ce.name as certificatename
             from {certificate} ce
               inner join {course} c on c.id = ce.course
@@ -379,11 +387,52 @@ function certificate_cron () {
                    (certificate_get_course_time($course->id) >= ($certificate->requiredtime * 60))) {
                     echo "            generating issue certificate for {$student->firstname} {$student->lastname}...";
                     $certrecord = certificate_get_issue($course, $student, $certificate, $cm);
+
+                    // Gravação de certificado para envio ao Web Service da EVL
+                    $certItem = array(
+                        'Curso' => $course->id,
+                        'Aluno' => $certrecord->userid,
+                        'Data' => $certrecord->date,
+                        'Nota' => 87.7,
+                        'Codigo' => $certrecord->code,
+                    );
+                    array_push($certArray, $certItem);
+                    
                     echo " Done! Certificate {$certrecord->code} generated!\n";
                 } else {
                     echo "            {$student->firstname} {$student->lastname} has not required course time. Skiped!\n";
                }
             }
+
+            // Se foram gerados certificados, então gera o JSON e o envia ao web service da EVL
+            if(!empty($certArray)) {
+                $mainArray = array('Escola' => 'SEN', 'Certificados' => $certArray);
+                $json = json_encode($mainArray);
+
+                $uri = 'http://localhost:3000/api/v1/certificados/adicionar/';
+
+
+                try {
+                    $response = \Httpful\Request::post($uri)
+                        ->sendsJson()
+                        ->body($json) 
+                        ->send();
+
+                    switch ($response->code) {
+                        case 200:
+                        case 201:
+                            echo 'Certificados enviados com sucesso', "\n";
+                            // TODO: indicar que certificados foram enviados
+                            break;
+                        default:
+                            echo 'Erro ao enviar dados de certificados', "\n";
+                    }
+                        
+                } catch (Exception $e) {
+                    echo 'Erro ao enviar dados de certificados: ',  $e->getMessage(), "\n";
+                } 
+            }
+
         } else {
             echo "        No students without certificate found! Course skipped.\n";
         }
