@@ -361,7 +361,7 @@ function certificate_cron () {
             from {course_completions} cc
               inner join {user} u on u.id = cc.userid
             where cc.course = ?
-              and cc.timecompleted is not null
+              and cc.timecompleted > 0
               and cc.userid not in (select ci.userid
                                     from {certificate_issues} ci
                                     where ci.certificateid = ?)
