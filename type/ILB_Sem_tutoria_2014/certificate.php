@@ -38,10 +38,11 @@ require_once("$CFG->dirroot/enrol/locallib.php");
 $cc = new completion_completion(array('userid'=>$USER->id, 'course'=>$course->id));
 
 $enrol_manager = new course_enrolment_manager($PAGE, $course);
-$user_enrol = end($enrol_manager->get_user_enrolments($USER->id));
+$user_enrol = $enrol_manager->get_user_enrolments($USER->id);
 
 $start_date = $user_enrol->timestart;
 $end_date   = $cc->timecompleted;
+$cert_date = $end_date;
 
 $fmt = '%d/%m/%Y'; // Default format
 if ($certificate->datefmt == 1) {
@@ -143,7 +144,7 @@ $pdf->SetAlpha(0.2);
 certificate_print_image($pdf, $certificate, CERT_IMAGE_WATERMARK, $wmarkx, $wmarky, $wmarkw, $wmarkh);
 $pdf->SetAlpha(1);
 certificate_print_image($pdf, $certificate, CERT_IMAGE_SEAL, $sealx, $sealy, '', '');
-certificate_print_image($pdf, $certificate, CERT_IMAGE_SIGNATURE, $sigx, $sigy, '', '');
+certificate_print_image($pdf, $certificate, CERT_IMAGE_SIGNATURE, $sigx, $sigy, '', '', $cert_date);
 
 // Add text
 $pdf->SetTextColor(0, 0, 0);

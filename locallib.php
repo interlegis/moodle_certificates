@@ -1158,8 +1158,8 @@ function certificate_draw_frame_letter($pdf, $certificate) {
  * @param int $w the width
  * @param int $h the height
  */
-function certificate_print_image($pdf, $certificate, $type, $x, $y, $w, $h) {
-    global $CFG;
+function certificate_print_image($pdf, $certificate, $type, $x, $y, $w, $h, $cert_date = null) {
+    global $CFG, $DB;
 
     switch($type) {
         case CERT_IMAGE_BORDER :
@@ -1172,10 +1172,25 @@ function certificate_print_image($pdf, $certificate, $type, $x, $y, $w, $h) {
             $path = "$CFG->dirroot/mod/certificate/pix/$type/$certificate->printseal";
             $uploadpath = "$CFG->dataroot/mod/certificate/pix/$type/$certificate->printseal";
             break;
+
         case CERT_IMAGE_SIGNATURE :
             $attr = 'printsignature';
-            $path = "$CFG->dirroot/mod/certificate/pix/$type/$certificate->printsignature";
-            $uploadpath = "$CFG->dataroot/mod/certificate/pix/$type/$certificate->printsignature";
+            
+            if($certificate->printsignature == 'automatica.jpeg' && ($cert_date != null)) {
+                $record = $DB->get_record_sql(
+                    'SELECT nome_arquivo ' .
+                    'FROM {ilb_assinaturas} ' .
+                    'WHERE ? BETWEEN dat_ini_validade AND coalesce(dat_fim_validade, extract(epoch from current_timestamp))',
+                    [$cert_date]
+                );
+                
+                $arq_assinatura = $record->nome_arquivo;
+            }else {
+                $arq_assinatura = $certificate->printsignature;
+            }
+            $path = "$CFG->dirroot/mod/certificate/pix/$type/$arq_assinatura";
+            $uploadpath = "$CFG->dataroot/mod/certificate/pix/$type/$arq_assinatura";
+
             break;
         case CERT_IMAGE_WATERMARK :
             $attr = 'printwmark';
