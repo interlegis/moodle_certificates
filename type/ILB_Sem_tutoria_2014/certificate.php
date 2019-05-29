@@ -38,7 +38,7 @@ require_once("$CFG->dirroot/enrol/locallib.php");
 $cc = new completion_completion(array('userid'=>$USER->id, 'course'=>$course->id));
 
 $enrol_manager = new course_enrolment_manager($PAGE, $course);
-$user_enrol = $enrol_manager->get_user_enrolments($USER->id);
+$user_enrol = end($enrol_manager->get_user_enrolments($USER->id));
 
 $start_date = $user_enrol->timestart;
 $end_date   = $cc->timecompleted;
