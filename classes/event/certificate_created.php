@@ -29,4 +29,14 @@ namespace mod_certificate\event;
 defined('MOODLE_INTERNAL') || die();
 
 class certificate_created extends \core\event\base {
+    /**
+     * Init method.
+     *
+     * @return void
+     */
+    protected function init() {
+        $this->data['crud'] = 'r';
+        $this->data['edulevel'] = self::LEVEL_OTHER;
+        $this->data['objecttable'] = 'certificate';
+    }
 }

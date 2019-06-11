@@ -366,7 +366,10 @@ function certificate_get_issue($course, $user, $certificate, $cm) {
     // Create new certificate issue record
     $certissue = new stdClass();
     $certissue->certificateid = $certificate->id;
+    $certissue->user = $user->username;
+    $certissue->course = $certificate->course;
     $certissue->userid = $user->id;
+    $certissue->gradefmt = $certificate->gradefmt;
     $certissue->code = certificate_generate_code();
     $certissue->timecreated =  time();
     $certissue->id = $DB->insert_record('certificate_issues', $certissue);

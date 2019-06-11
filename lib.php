@@ -349,6 +349,13 @@ function certificate_get_post_actions() {
 function certificate_cron () {
     global $DB;
 
+    // $sql = "select distinct cm.id as cmid, c.*, ce.id as certificateid, ce.name as certificatename
+    //         from {certificate} ce
+    //             inner join {course} c on c.id = ce.course
+    //             inner join {course_modules} cm on cm.course = c.id and cm.instance = ce.id
+    //         where c.visible = 1
+    //         order by c.id";
+    
     $sql = "select distinct cm.id as cmid, c.*, ce.id as certificateid, ce.name as certificatename
             from {certificate} ce
               inner join {course} c on c.id = ce.course
@@ -367,6 +374,7 @@ function certificate_cron () {
                                     from {certificate_issues} ci
                                     where ci.certificateid = ?)
             order by u.firstname";
+            
     foreach ($courses as $course) {
         echo "    Processing course {$course->fullname}, certificate: {$course->certificatename}...\n";
         $students = $DB->get_records_sql($sql, array($course->id, $course->certificateid));
@@ -380,17 +388,12 @@ function certificate_cron () {
                    (certificate_get_course_time($course->id) >= ($certificate->requiredtime * 60))) {
                     echo "            generating issue certificate for {$student->firstname} {$student->lastname}...";
                     $certrecord = certificate_get_issue($course, $student, $certificate, $cm);
-
-                    $context = context_module::instance($cm->id);
-
+                    $context = context_course::instance($course->id);
                     $event = \mod_certificate\event\certificate_created::create(array(
                         'objectid' => $certrecord->id,
                         'context' => $context,
                         'other' => $certrecord)
                     );
-                    //$event->add_record_snapshot('course_modules', $this->cm);
-                    //$event->add_record_snapshot('attendance_sessions', $session);
-                    //$event->add_record_snapshot('attendance_log', $record);
                     $event->trigger();
 
                     echo " Done! Certificate {$certrecord->code} generated!\n";
