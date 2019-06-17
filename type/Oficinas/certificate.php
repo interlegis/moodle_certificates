@@ -121,14 +121,15 @@ $cpf = mask($USER->username, '###.###.###-##');
 
 require_once($CFG->dirroot.'/user/profile/field/cpf/field.class.php');
 
-$pdf = new PDF($certificate->orientation, 'mm', 'A4', true, 'UTF-8', false);
 
+$pdf = new PDF($certificate->orientation, 'mm', 'A4', true, 'UTF-8', false);
 $pdf->SetTitle($certificate->name);
 $pdf->SetProtection(array('modify'));
 $pdf->setPrintHeader(false);
 $pdf->setPrintFooter(false);
 $pdf->SetAutoPageBreak(false, 0);
 $pdf->AddPage();
+
 
 // Define variables
 // Landscape
@@ -171,8 +172,6 @@ if ($certificate->orientation == 'L') {
     $codex = $x;
     $codey = 245;
 }
-$pdf->SetTextColor(0, 0, 0);
-certificate_print_text($pdf, $x, $y, 'C', 'freesans', '', 20, get_string('title', 'certificate'));
 
 // Front page ------------------------------------------------------------------------------------------------------------
 // Add images and lines
@@ -187,11 +186,6 @@ certificate_print_image($pdf, $certificate, CERT_IMAGE_SIGNATURE, $sigx, $sigy, 
 
 
 $certificador = 'O Instituto Legislativo Brasileiro, órgão gestor do Programa Interlegis, certifica que';
-
-/*
-participou da oficina de "PORTAL MODELO", na Câmara Municipal de Franca SP, no período de 26 a 28
-de novembro de 2018, com carga horária de 20 horas-aula.
-*/
 
 // Add text
 $pdf->SetTextColor(0, 0, 0);
