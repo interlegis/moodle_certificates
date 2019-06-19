@@ -39,11 +39,10 @@ $cc = new completion_completion(array('userid'=>$USER->id, 'course'=>$course->id
 
 $enrol_manager = new course_enrolment_manager($PAGE, $course);
 
-$enrolments = $enrol_manager->get_user_enrolments($USER->id);
+//$enrolments = $enrol_manager->get_user_enrolments($USER->id);
+$user_enrol = reset($enrol_manager->get_user_enrolments($USER->id));
 
-//$user_enrol = isempty($enrolments)? end();
-
-$start_date = (empty($enrolments))? $enrolments[0]->timestart : 0;
+$start_date = $user_enrol->timestart;
 $end_date   = $cc->timecompleted;
 $cert_date = $end_date;
 
