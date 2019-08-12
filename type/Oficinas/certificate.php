@@ -39,39 +39,7 @@ $start_date = $course->startdate;
 $end_date   = $course->enddate;
 $emissao_date   = $course->enddate;
 
-
-function obtemCampoCustomizadoCurso($idCurso, $nomeCampo) {
-    global $DB;
-
-    $sql = "
-        SELECT d.value, f.configdata::json->>'options' as options
-        FROM mdl_course c
-        JOIN mdl_context ctx
-            ON c.id = ?
-                AND ctx.contextlevel = 50
-                AND ctx.instanceid = c.id
-        JOIN mdl_customfield_field f
-            ON f.shortname = ?
-        JOIN mdl_customfield_data d
-            ON d.fieldid = f.id
-                AND d.contextid = ctx.id
-        ";
-    
-    $valueArray = $DB->get_record_sql($sql, [$idCurso, $nomeCampo]);
-    $value = $valueArray->value;
-    $options = $valueArray->options;
-
-    if($options == null) {
-        return $value;
-    } else {
-        
-        $optionsArray = preg_split("/\s*\n\s*/", trim($options));
-        return $optionsArray[$value-1];
-    }
-}
-
 // Campos customizados do curso
-$cargahoraria = obtemCampoCustomizadoCurso($course->id, 'cargahoraria');
 $instrutor = obtemCampoCustomizadoCurso($course->id, 'instrutor');
 $monitor = obtemCampoCustomizadoCurso($course->id, 'monitor');
 $municipio = obtemCampoCustomizadoCurso($course->id, 'municipio');
@@ -178,7 +146,7 @@ if ($certificate->orientation == 'L') {
 certificate_print_image($pdf, $certificate, CERT_IMAGE_BORDER, $brdrx, $brdry, $brdrw, $brdrh);
 certificate_draw_frame($pdf, $certificate);
 // Set alpha to semi-transparency
-$pdf->SetAlpha(0.2);
+$pdf->SetAlpha(1);
 certificate_print_image($pdf, $certificate, CERT_IMAGE_WATERMARK, $wmarkx, $wmarky, $wmarkw, $wmarkh);
 $pdf->SetAlpha(1);
 certificate_print_image($pdf, $certificate, CERT_IMAGE_SEAL, $sealx, $sealy, '', '');
@@ -219,9 +187,10 @@ certificate_print_text($pdf, $x, $y + 10, 'C', 'freesans', '', 20, mb_strtoupper
 certificate_print_text($pdf, $custx, $custy, 'L', 'freesans', '', 10, $certificate->customtext);
 certificate_print_text($pdf, $codex, $codey, 'C', 'freesans', '', 10, 'CÓDIGO DE VALIDAÇÃO');
 certificate_print_text($pdf, $codex, $codey + 5, 'C', 'freesans', 'B', 12, certificate_get_code($certificate, $certrecord));
-certificate_print_text($pdf, $codex, $codey + 10, 'C', 'freesans', '', 10, 'Para verificar a autenticidade deste certificado, acesse http://saberes.senado.leg.br/ e informe o código acima');
+certificate_print_text($pdf, $codex, $codey + 10, 'C', 'freesans', '', 10, 'Para verificar a autenticidade deste certificado, acesse https://evl.interlegis.leg.br/ e informe o código acima');
+certificate_print_text($pdf, $codex, $codey + 15, 'C', 'freesans', '', 10, 'ou utilize um leitor de QrCode para ler o código ao lado');
 
-
+certificate_print_qrcode($pdf, $codex, $codey + 10);
 
 
 

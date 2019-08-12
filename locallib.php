@@ -30,6 +30,8 @@ require_once($CFG->dirroot.'/mod/certificate/lib.php');
 require_once($CFG->dirroot.'/course/lib.php');
 require_once($CFG->dirroot.'/grade/lib.php');
 require_once($CFG->dirroot.'/grade/querylib.php');
+require_once($CFG->dirroot.'/mod/certificate/phpqrcode/phpqrcode.php');
+require_once($CFG->dirroot.'/blocks/escola_modelo/classes/util.php');
 
 /** The border image folder */
 define('CERT_IMAGE_BORDER', 'borders');
@@ -370,7 +372,7 @@ function certificate_get_issue($course, $user, $certificate, $cm) {
     $certissue->course = $certificate->course;
     $certissue->userid = $user->id;
     $certissue->gradefmt = $certificate->gradefmt;
-    $certissue->code = certificate_generate_code();
+    $certissue->code = evlSiglaEscola() . '-' . certificate_generate_code();
     $certissue->timecreated =  time();
     $certissue->id = $DB->insert_record('certificate_issues', $certissue);
 
@@ -1149,6 +1151,26 @@ function certificate_draw_frame_letter($pdf, $certificate) {
         }
     }
 }
+
+function certificate_print_qrcode($pdf, $code, $x, $y) {
+    
+    ob_start();
+    QRcode::png("https://evl.interlegis.leg.br?XXXXX");
+
+    //QRcode::png($content);
+    $imgdata = ob_get_contents();
+    ob_end_clean();
+
+    //$imgdata = @file_get_contents('https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=http%3A%2F%2Fwww.google.com%2F&choe=UTF-8');
+    //
+            
+    // Example of Image from data stream ('PHP rules')
+    // The '@' character is used to indicate that follows an image data stream and not an image file name
+    $pdf->Image('@'.$imgdata, $x, $y, 25, 25);
+    //$pdf->Image($path, $x, $y, $w, $h);
+}
+
+
 
 /**
  * Prints border images from the borders folder in PNG or JPG formats.
