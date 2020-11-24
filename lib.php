@@ -342,6 +342,42 @@ function certificate_get_post_actions() {
     return array('received');
 }
 
+// TODO mover para outro local, usado também em certificado
+function certificate_obtemCampoCustomizadoCurso($idCurso, $nomeCampo) {
+    global $DB;
+
+    $sql = "
+        SELECT d.value, f.configdata::json->>'options' as options
+        FROM mdl_course c
+        JOIN mdl_context ctx
+            ON c.id = ?
+                AND ctx.contextlevel = 50
+                AND ctx.instanceid = c.id
+        JOIN mdl_customfield_field f
+            ON f.shortname = ?
+        JOIN mdl_customfield_data d
+            ON d.fieldid = f.id
+                AND d.contextid = ctx.id
+        ";
+
+    $valueArray = $DB->get_record_sql($sql, [$idCurso, $nomeCampo]);
+
+    if($valueArray) {
+        $value = $valueArray->value;
+        $options = $valueArray->options;
+
+        if($options == null) {
+            return $value;
+        } else {
+            $optionsArray = preg_split("/\s*\n\s*/", trim($options));
+            return $optionsArray[$value-1];
+        }
+    } else { 
+        return '';
+    }
+}
+
+
 /**
  * Function to be run periodically according to the moodle cron
  * TODO:This needs to be done
