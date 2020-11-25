@@ -61,7 +61,7 @@ $emissao_date = userdate($emissao_date, $fmt);
 
 $verbo_acao = certificate_obtemCampoCustomizadoCurso($course->id, 'papel_acao_capacitacao');
 $tipo_acao = certificate_obtemCampoCustomizadoCurso($course->id, 'tipo_acao_capacitacao');
-if($tipo_acao != "") {
+if($tipo_acao == "") {
     $tipo_acao = 'do curso';
 }
 $modalidade_acao = certificate_obtemCampoCustomizadoCurso($course->id, 'modalidade_capacitacao');
