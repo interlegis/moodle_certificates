@@ -150,24 +150,24 @@ $pdf->SetAlpha(0.2);
 certificate_print_image($pdf, $certificate, CERT_IMAGE_WATERMARK, $wmarkx, $wmarky, $wmarkw, $wmarkh);
 $pdf->SetAlpha(1);
 certificate_print_image($pdf, $certificate, CERT_IMAGE_SEAL, $sealx, $sealy, '', '');
-certificate_print_image($pdf, $certificate, CERT_IMAGE_SIGNATURE, $sigx, $sigy, '', '');
+certificate_print_image($pdf, $certificate, CERT_IMAGE_SIGNATURE, $sigx, $sigy, '', '', $emissao_date);
 
 // Add text
 $pdf->SetTextColor(0, 0, 0);
 certificate_print_text($pdf, $x, $y, 'C', 'freesans', '', 20, get_string('title', 'certificate'));
 certificate_print_text($pdf, $x, $y + 15, 'C', 'freesans', '', 18, get_string('certify', 'certificate'));
-certificate_print_text($pdf, $x, $y + 25, 'C', 'freesans', 'B', 18, mb_strtoupper(fullname($USER), 'UTF-8').", CPF nº $cpf");
+certificate_print_text($pdf, $x, $y + 25, 'C', 'freesans', 'B', 18, mb_strtoupper(fullname($USER), 'UTF-8').",");
 if($modalidade_acao == "") {
-    certificate_print_text($pdf, $x, $y + 35, 'C', 'freesans', '', 18, $verbo_acao . ' ' . $tipo_acao);
+    certificate_print_text($pdf, $x, $y + 35, 'C', 'freesans', '', 18, "CPF nº $cpf, " . $verbo_acao . ' ' . $tipo_acao);
 }
 else {
-    certificate_print_text($pdf, $x, $y + 35, 'C', 'freesans', '', 18, $verbo_acao . ", na modalidade " . $modalidade_acao . ", " . $tipo_acao);
+    certificate_print_text($pdf, $x, $y + 35, 'C', 'freesans', '', 18, "CPF nº $cpf, " . $verbo_acao . ", na modalidade " . $modalidade_acao . ", " . $tipo_acao);
 }    
 certificate_print_text($pdf, $x, $y + 45, 'C', 'freesans', 'B', 18, mb_strtoupper($course->fullname, 'UTF-8'));
 if($start_date == $end_date) {
-    certificate_print_text($pdf, $x, $y + 55, 'C', 'freesans', '', 18, "em {$start_date}");
+    certificate_print_text($pdf, $x, $y + 55, 'C', 'freesans', '', 18, "realizado em {$start_date}");
 } else {
-    certificate_print_text($pdf, $x, $y + 55, 'C', 'freesans', '', 18, "no período de {$start_date} a {$end_date}");
+    certificate_print_text($pdf, $x, $y + 55, 'C', 'freesans', '', 18, "realizado no período de {$start_date} a {$end_date}");
 }
 if ($certificate->printhours) {
     certificate_print_text($pdf, $x, $y + 65, 'C', 'freesans', '', 18, "com carga horária de {$certificate->printhours}");
