@@ -65,7 +65,7 @@ if($tipo_acao == "") {
     $tipo_acao = 'do curso';
 }
 $modalidade_acao = certificate_obtemCampoCustomizadoCurso($course->id, 'modalidade_capacitacao');
-$titulo = certificate_obtemCampoCustomizadoCurso($course->id, 'entidade_certificadora');
+$entidade_certificadora = certificate_obtemCampoCustomizadoCurso($course->id, 'entidade_certificadora');
 
 //MASK para CPF
 function mask($val, $mask)
@@ -156,8 +156,8 @@ certificate_print_image($pdf, $certificate, CERT_IMAGE_SIGNATURE, $sigx, $sigy, 
 // Add text
 $pdf->SetTextColor(0, 0, 0);
 
-certificate_print_text($pdf, $x, $y, 'C', 'freesans', '', 20, $titulo);
-certificate_print_text($pdf, $x, $y + 15, 'C', 'freesans', '', 18, get_string('certify', 'certificate'));
+certificate_print_text($pdf, $x, $y, 'C', 'freesans', '', 20, get_string('title', 'certificate'));
+certificate_print_text($pdf, $x, $y + 15, 'C', 'freesans', '', 18, $entidade_certificadora);
 certificate_print_text($pdf, $x, $y + 25, 'C', 'freesans', 'B', 18, mb_strtoupper(fullname($USER), 'UTF-8').",");
 if($modalidade_acao == "") {
     certificate_print_text($pdf, $x, $y + 35, 'C', 'freesans', '', 18, "CPF nº $cpf, " . $verbo_acao . ' ' . $tipo_acao);
