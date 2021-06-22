@@ -55,6 +55,7 @@ if ($certificate->datefmt == 1) {
 }
 
 $start_date = userdate($start_date, $fmt);
+$cert_date = $end_date;
 $end_date = userdate($end_date, $fmt);
 $emissao_date = userdate($emissao_date, $fmt);
 
@@ -150,7 +151,7 @@ $pdf->SetAlpha(0.2);
 certificate_print_image($pdf, $certificate, CERT_IMAGE_WATERMARK, $wmarkx, $wmarky, $wmarkw, $wmarkh);
 $pdf->SetAlpha(1);
 certificate_print_image($pdf, $certificate, CERT_IMAGE_SEAL, $sealx, $sealy, '', '');
-certificate_print_image($pdf, $certificate, CERT_IMAGE_SIGNATURE, $sigx, $sigy, '', '', $emissao_date);
+certificate_print_image($pdf, $certificate, CERT_IMAGE_SIGNATURE, $sigx, $sigy, '', '', $cert_date);
 
 // Add text
 $pdf->SetTextColor(0, 0, 0);
