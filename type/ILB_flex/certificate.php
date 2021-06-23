@@ -37,7 +37,6 @@ require_once("$CFG->dirroot/completion/completion_completion.php");
 
 $start_date = $course->startdate;
 $end_date   = $course->enddate;
-$emissao_date   = $course->enddate;
 
 $fmt = '%d/%m/%Y'; // Default format
 if ($certificate->datefmt == 1) {
@@ -53,19 +52,55 @@ if ($certificate->datefmt == 1) {
     $fmt = get_string('strftimedate', 'langconfig');
 }
 
-$start_date = userdate($start_date, $fmt);
-$cert_date = $end_date;
-$end_date = userdate($end_date, $fmt);
-$emissao_date = userdate($emissao_date, $fmt);
+$dataInicio = userdate($start_date, $fmt);
+$dataFim = userdate($end_date, $fmt);
+$cert_date = $end_date; // para fins de obtenção automática de assinatura (COTREN apenas)
 
+$anoInicio = userdate($start_date, '%Y');
+$anoFim = userdate($end_date, '%Y');
+$mesInicio = userdate($start_date, '%B');
+$mesFim = userdate($end_date, '%B');
+$diaInicio = userdate($start_date, '%d');
+$diaFim = userdate($end_date, '%d');
+
+if($diaInicio == '1') {$diaInicio .= "º";}
+if($diaFim == '1') {$diaFim .= "º";}
 
 $verbo_acao = certificate_obtemCampoCustomizadoCurso($course->id, 'papel_acao_capacitacao');
+if(empty($verbo_acao)) {
+    $verbo_acao = 'participou';
+};
 $tipo_acao = certificate_obtemCampoCustomizadoCurso($course->id, 'tipo_acao_capacitacao');
 if($tipo_acao == "") {
     $tipo_acao = 'do curso';
 }
 $modalidade_acao = certificate_obtemCampoCustomizadoCurso($course->id, 'modalidade_capacitacao');
 $entidade_certificadora = certificate_obtemCampoCustomizadoCurso($course->id, 'entidade_certificadora');
+if($entidade_certificadora == '') {
+    $entidade_certificadora = 'O Instituto Legislativo Brasileiro certifica que';
+}
+
+function montaPeriodo() {
+    global $anoInicio, $anoFim, $mesInicio, $mesFim, $diaInicio, $diaFim, $dataInicio, $dataFim;
+
+    if($anoInicio != $anoFim) {
+        // ano diferente
+        return "realizado no período de {$dataInicio} a {$dataFim}";
+    } else {
+        if($mesInicio != $mesFim) {
+            // mesmo ano, mês diferente
+            return "realizado no período de $diaInicio de $mesInicio a $diaFim de $mesFim de $anoInicio";
+        } else {
+            if($diaInicio != $diaFim) {
+                // mesmo mês, dia diferente
+                return "realizado no período de $diaInicio a $diaFim de $mesInicio de $anoInicio";
+            } else {
+                // evento de um dia
+                return "realizado em {$dataInicio}";
+            }
+        }  
+    }
+}
 
 //MASK para CPF
 function mask($val, $mask)
@@ -156,26 +191,28 @@ certificate_print_image($pdf, $certificate, CERT_IMAGE_SIGNATURE, $sigx, $sigy, 
 // Add text
 $pdf->SetTextColor(0, 0, 0);
 
+// $entidade_certificadora = 'O Instituto Legislativo Brasileiro (ILB), do Senado Federal, em parceria com
+// as escolas de governo da Câmara dos Deputados (CEFOR) e do Tribunal de Contas da União (ISC), certifica que';
+$nome_aluno = mb_strtoupper(fullname($USER), 'UTF-8');
+$dados_aluno = "CPF nº $cpf";
+$nome_curso = mb_strtoupper($course->fullname, 'UTF-8');
+$periodo = montaPeriodo();
+$carga_horaria = "com carga horária de {$certificate->printhours}";
+$nota = (certificate_get_grade($certificate, $course)?certificate_get_grade($certificate, $course):'');
+
+$texto_base_certificado = $entidade_certificadora . "<br><br>" . 
+    "<b>" . $nome_aluno . "</b><br><br>" .
+    $dados_aluno . ", " . $verbo_acao . ($modalidade_acao? ", na modalidade " . $modalidade_acao . ',':"") . ' ' . $tipo_acao  . ' ' . 
+    "<i>" . $nome_curso . "</i>" . 
+    ($certificate->printhours?", com carga horária de $certificate->printhours":'') .
+    ', ' . $periodo . 
+    ($nota?', ' . $nota:'') . '.';
+
 certificate_print_text($pdf, $x, $y, 'C', 'freesans', '', 20, get_string('title', 'certificate'));
-certificate_print_text($pdf, $x, $y + 15, 'C', 'freesans', '', 18, $entidade_certificadora);
-certificate_print_text($pdf, $x, $y + 25, 'C', 'freesans', 'B', 18, mb_strtoupper(fullname($USER), 'UTF-8').",");
-if($modalidade_acao == "") {
-    certificate_print_text($pdf, $x, $y + 35, 'C', 'freesans', '', 18, "CPF nº $cpf, " . $verbo_acao . ' ' . $tipo_acao);
-}
-else {
-    certificate_print_text($pdf, $x, $y + 35, 'C', 'freesans', '', 18, "CPF nº $cpf, " . $verbo_acao . ", na modalidade " . $modalidade_acao . ", " . $tipo_acao);
-}    
-certificate_print_text($pdf, $x, $y + 45, 'C', 'freesans', 'B', 18, mb_strtoupper($course->fullname, 'UTF-8'));
-if($start_date == $end_date) {
-    certificate_print_text($pdf, $x, $y + 55, 'C', 'freesans', '', 18, "realizado em {$start_date}");
-} else {
-    certificate_print_text($pdf, $x, $y + 55, 'C', 'freesans', '', 18, "realizado no período de {$start_date} a {$end_date}");
-}
-if ($certificate->printhours) {
-    certificate_print_text($pdf, $x, $y + 65, 'C', 'freesans', '', 18, "com carga horária de {$certificate->printhours}");
-}
-certificate_print_text($pdf, $x, $y + 75, 'C', 'freesans', '', 18, certificate_get_grade($certificate, $course));
-certificate_print_text($pdf, $x, $y + 85, 'R', 'freesans', 'B', 14,  "Brasília, {$emissao_date}.");
+certificate_print_text($pdf, $x, $y + 15, 'C', 'freesans', '', 17, $texto_base_certificado);
+
+// Deve ser fixo
+certificate_print_text($pdf, $x, $y + 85, 'R', 'freesans', 'B', 14,  "Brasília, {$dataFim}.");
 
 
 // Verse page -----------------------------------------------------------------------------------------------------------
@@ -192,7 +229,7 @@ certificate_print_image($pdf, $certificate, CERT_IMAGE_SEAL, $sealx, $sealy, '',
 // Add text
 $pdf->SetTextColor(0, 0, 0);
 certificate_print_text($pdf, $x, $y, 'C', 'freesans', '', 20, 'PROGRAMA DO CURSO');
-certificate_print_text($pdf, $x, $y + 10, 'C', 'freesans', '', 20, mb_strtoupper($course->fullname, 'UTF-8'));
+certificate_print_text($pdf, $x, $y + 10, 'C', 'freesans', '', 20, $nome_curso);
 certificate_print_text($pdf, $custx, $custy, 'L', 'freesans', '', 10, $certificate->customtext);
 certificate_print_text($pdf, $codex, $codey, 'C', 'freesans', '', 10, 'CÓDIGO DE VALIDAÇÃO');
 certificate_print_text($pdf, $codex, $codey + 5, 'C', 'freesans', 'B', 12, certificate_get_code($certificate, $certrecord));

@@ -1161,14 +1161,19 @@ function certificate_draw_frame_letter($pdf, $certificate) {
  * @param int $w the width
  * @param int $h the height
  */
-function certificate_print_image($pdf, $certificate, $type, $x, $y, $w, $h, $cert_date = null) {
+function certificate_print_image($pdf, $certificate, $type, $x, $y, $w, $h, $cert_date = null, $verso = false) {
     global $CFG, $DB;
 
     switch($type) {
         case CERT_IMAGE_BORDER :
             $attr = 'borderstyle';
-            $path = "$CFG->dirroot/mod/certificate/pix/$type/$certificate->borderstyle";
-            $uploadpath = "$CFG->dataroot/mod/certificate/pix/$type/$certificate->borderstyle";
+            if(!$verso) {
+                $path = "$CFG->dirroot/mod/certificate/pix/$type/$certificate->borderstyle";
+                $uploadpath = "$CFG->dataroot/mod/certificate/pix/$type/$certificate->borderstyle";
+            } else {
+                $path = "$CFG->dirroot/mod/certificate/pix/$type/$verso-" . "$certificate->borderstyle";
+                $uploadpath = "$CFG->dataroot/mod/certificate/pix/$type/$verso-" . "$certificate->borderstyle";
+            }
             break;
         case CERT_IMAGE_SEAL :
             $attr = 'printseal';
