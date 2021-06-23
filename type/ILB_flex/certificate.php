@@ -136,14 +136,15 @@ $pdf->SetAutoPageBreak(false, 0);
 $pdf->AddPage();
 
 // Define variables
-// Landscape
-if ($certificate->orientation == 'L') {
+// Only Landscape
     $x = 20;
     $y = 60;
     $sealx = 230;
     $sealy = 150;
-    $sigx = 00;
-    $sigy = 165;
+    $sigx = 0;
+    $sigy = 145;
+    $sigw = 297;
+    $sigh = 44;
     $custx = 15;
     $custy = $y+25;
     $wmarkx = 40;
@@ -156,26 +157,6 @@ if ($certificate->orientation == 'L') {
     $brdrh = 210;
     $codex = $x;
     $codey = 175;
-} else { // Portrait
-    $x = 10;
-    $y = 90;
-    $sealx = 150;
-    $sealy = 220;
-    $sigx = 10;
-    $sigy = 235;
-    $custx = 15;
-    $custy = $y+25;
-    $wmarkx = 26;
-    $wmarky = 58;
-    $wmarkw = 158;
-    $wmarkh = 170;
-    $brdrx = 0;
-    $brdry = 0;
-    $brdrw = 210;
-    $brdrh = 297;
-    $codex = $x;
-    $codey = 245;
-}
 
 // Front page ------------------------------------------------------------------------------------------------------------
 // Add images and lines
@@ -186,7 +167,8 @@ $pdf->SetAlpha(0.2);
 certificate_print_image($pdf, $certificate, CERT_IMAGE_WATERMARK, $wmarkx, $wmarky, $wmarkw, $wmarkh);
 $pdf->SetAlpha(1);
 certificate_print_image($pdf, $certificate, CERT_IMAGE_SEAL, $sealx, $sealy, '', '');
-certificate_print_image($pdf, $certificate, CERT_IMAGE_SIGNATURE, $sigx, $sigy, '', '', $cert_date);
+// assinatura esperada: 1863x276
+certificate_print_image($pdf, $certificate, CERT_IMAGE_SIGNATURE, $sigx, $sigy, $sigw, $sigh, $cert_date);
 
 // Add text
 $pdf->SetTextColor(0, 0, 0);
