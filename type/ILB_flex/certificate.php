@@ -137,12 +137,12 @@ $pdf->AddPage();
 
 // Define variables
 // Only Landscape
-    $x = 20;
+    $x = 10;
     $y = 60;
     $sealx = 230;
     $sealy = 150;
     $sigx = 0;
-    $sigy = 145;
+    $sigy = 135;
     $sigw = 297;
     $sigh = 44;
     $custx = 15;
@@ -156,7 +156,7 @@ $pdf->AddPage();
     $brdrw = 297;
     $brdrh = 210;
     $codex = $x;
-    $codey = 175;
+    $codey = 165;
 
 // Front page ------------------------------------------------------------------------------------------------------------
 // Add images and lines
@@ -194,7 +194,7 @@ certificate_print_text($pdf, $x, $y, 'C', 'freesans', '', 20, get_string('title'
 certificate_print_text($pdf, $x, $y + 15, 'C', 'freesans', '', 17, $texto_base_certificado);
 
 // Deve ser fixo
-certificate_print_text($pdf, $x, $y + 85, 'R', 'freesans', 'B', 14,  "Brasília, {$dataFim}.");
+certificate_print_text($pdf, $x, $y + 75, 'R', 'freesans', 'B', 14,  "Brasília, {$dataFim}.");
 
 
 // Verse page -----------------------------------------------------------------------------------------------------------
