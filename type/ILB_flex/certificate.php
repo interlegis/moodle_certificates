@@ -35,8 +35,29 @@ if (!defined('MOODLE_INTERNAL')) {
  */
 require_once("$CFG->dirroot/completion/completion_completion.php");
 
-$start_date = $course->startdate;
-$end_date   = $course->enddate;
+// Obtem as preferências para exibição do período do certificado
+$periodo_certificado = certificate_obtemCampoCustomizadoCurso($course->id, 'periodo_certificado');
+if(empty(trim($periodo_certificado))) {
+    $periodo_certificado = 'Duração do curso';
+}
+
+if($periodo_certificado == 'Duração do curso') {
+    // Datas inicial e final são configuradas no curso 
+    $start_date = $course->startdate;
+    $end_date   = $course->enddate;
+} else {
+    // $periodo_certificado == 'Sem período' ou 'Matrícula até conclusão'
+    require_once("$CFG->dirroot/enrol/locallib.php");
+
+    // Data inicial é a matrícula
+    $enrol_manager = new course_enrolment_manager($PAGE, $course);
+    $user_enrol = reset($enrol_manager->get_user_enrolments($USER->id));
+    $start_date = $user_enrol->timestart;
+
+    // Data final é quando completou o curso
+    $cc = new completion_completion(array('userid'=>$USER->id, 'course'=>$course->id));
+    $end_date   = $cc->timecompleted;
+} 
 
 $fmt = '%d/%m/%Y'; // Default format
 if ($certificate->datefmt == 1) {
@@ -65,6 +86,11 @@ $diaFim = userdate($end_date, '%d');
 
 if($diaInicio == '1') {$diaInicio .= "º";}
 if($diaFim == '1') {$diaFim .= "º";}
+
+$nome_acao = certificate_obtemCampoCustomizadoCurso($course->id, 'nome_acao_certificado');
+if(empty(trim($nome_acao))) {
+    $nome_acao = mb_strtoupper($course->fullname, 'UTF-8');
+}
 
 $verbo_acao = certificate_obtemCampoCustomizadoCurso($course->id, 'papel_acao_capacitacao');
 if(empty($verbo_acao)) {
@@ -177,7 +203,6 @@ $pdf->SetTextColor(0, 0, 0);
 // as escolas de governo da Câmara dos Deputados (CEFOR) e do Tribunal de Contas da União (ISC), certifica que';
 $nome_aluno = mb_strtoupper(fullname($USER), 'UTF-8');
 $dados_aluno = "CPF nº $cpf";
-$nome_curso = mb_strtoupper($course->fullname, 'UTF-8');
 $periodo = montaPeriodo();
 $carga_horaria = "com carga horária de {$certificate->printhours}";
 $nota = (certificate_get_grade($certificate, $course)?certificate_get_grade($certificate, $course):'');
@@ -185,9 +210,9 @@ $nota = (certificate_get_grade($certificate, $course)?certificate_get_grade($cer
 $texto_base_certificado = $entidade_certificadora . "<br><br>" . 
     "<b>" . $nome_aluno . "</b><br><br>" .
     $dados_aluno . ", " . $verbo_acao . ($modalidade_acao? ", na modalidade " . $modalidade_acao . ',':"") . ' ' . $tipo_acao  . ' ' . 
-    "<i>" . $nome_curso . "</i>" . 
+    "<i>" . $nome_acao . "</i>" . 
     ($certificate->printhours?", com carga horária de $certificate->printhours":'') .
-    ', ' . $periodo . 
+    ($periodo_certificado != 'Sem período'?', ' . $periodo:'') . 
     ($nota?', ' . $nota:'') . '.';
 
 certificate_print_text($pdf, $x, $y, 'C', 'freesans', '', 20, get_string('title', 'certificate'));
