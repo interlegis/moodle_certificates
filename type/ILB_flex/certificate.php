@@ -148,7 +148,46 @@ function mask($val, $mask)
     return $maskared;
 }
 
-$cpf = mask($USER->username, '###.###.###-##');
+$cpf = $USER->username;
+if (ctype_alpha(substr($cpf, 0, 2))) {
+    // Trata-se de um estrangeiro. Remove o prefixo do documento
+    $cpf = substr($cpf, 2);
+}
+
+switch ($USER->country) {
+    case "AO":
+        $dados_aluno = "NIF (Angola) nº {$cpf}";
+        break;
+    case "CV":
+        $cpf = mask($cpf, "### ### ###");
+        $dados_aluno = "NIF (Cabo Verde) nº {$cpf}";
+        break;
+    case "GW":
+        $dados_aluno = "NIF (Guiné-Bissau) nº {$cpf}";
+        break;
+    case "GQ":
+        $dados_aluno = "NIF (Guiné Equatorial) nº {$cpf}";
+        break;
+    case "MZ":
+        $cpf = mask($cpf, "### ### ###");
+        $dados_aluno = "NUIT (Moçambique) nº {$cpf}";
+        break;
+    case "PT":
+        $cpf = mask($cpf, '### ### ###');
+        $dados_aluno = "NIF (Portugal) nº {$cpf}";
+        break;
+    case "ST":
+        $cpf = mask($cpf, '### ### ###');
+        $dados_aluno = "NIF (São Tomé e Príncipe) nº {$cpf}";
+        break;
+    case "TL":
+        $dados_aluno = "NIF/TIN (Timor Leste) nº {$cpf}";
+        break;
+    default:
+        # todo o resto considera CPF
+        $cpf = mask($cpf, '###.###.###-##');
+        $dados_aluno = "CPF nº {$cpf}";
+}
 
 require_once($CFG->dirroot.'/user/profile/field/cpf/field.class.php');
 
@@ -202,7 +241,6 @@ $pdf->SetTextColor(0, 0, 0);
 // $entidade_certificadora = 'O Instituto Legislativo Brasileiro (ILB), do Senado Federal, em parceria com
 // as escolas de governo da Câmara dos Deputados (CEFOR) e do Tribunal de Contas da União (ISC), certifica que';
 $nome_aluno = mb_strtoupper(fullname($USER), 'UTF-8');
-$dados_aluno = "CPF nº $cpf";
 $periodo = montaPeriodo();
 $carga_horaria = "com carga horária de {$certificate->printhours}";
 $nota = (certificate_get_grade($certificate, $course)?certificate_get_grade($certificate, $course):'');
