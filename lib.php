@@ -385,62 +385,87 @@ function certificate_obtemCampoCustomizadoCurso($idCurso, $nomeCampo) {
 function certificate_cron () {
     global $DB;
 
-    // $sql = "select distinct cm.id as cmid, c.*, ce.id as certificateid, ce.name as certificatename
-    //         from {certificate} ce
-    //             inner join {course} c on c.id = ce.course
-    //             inner join {course_modules} cm on cm.course = c.id and cm.instance = ce.id
-    //         where c.visible = 1
-    //         order by c.id";
-    
-    $sql = "select distinct cm.id as cmid, c.*, ce.id as certificateid, ce.name as certificatename
-            from {certificate} ce
-              inner join {course} c on c.id = ce.course
-              inner join {course_modules} cm on cm.course = c.id and cm.instance = ce.id and cm.module = ?
-            where c.visible = 1
-            order by c.id";
-    echo "\n\nGenerate certificates for user that has completed the course-------------------------\n";
-    $certmodule = $DB->get_record('modules', array('name' => 'certificate'));
-    $courses = $DB->get_records_sql($sql, array($certmodule->id));
-    $sql = "select u.*
-            from {course_completions} cc
-              inner join {user} u on u.id = cc.userid
-            where cc.course = ?
-              and cc.timecompleted > 0
-              and cc.userid not in (select ci.userid
-                                    from {certificate_issues} ci
-                                    where ci.certificateid = ?)
-            order by u.firstname";
-            
-    foreach ($courses as $course) {
-        echo "    Processing course {$course->fullname}, certificate: {$course->certificatename}...\n";
-        $students = $DB->get_records_sql($sql, array($course->id, $course->certificateid));
-        $total = count($students);
-        if ($total > 0) {
-            echo "        {$total} students without certificate found, generating certificates for them...\n";
-            $certificate = $DB->get_record('certificate', array('id' => $course->certificateid));
-            $cm = get_coursemodule_from_id('certificate', $course->cmid);
-            foreach ($students as $student) {
-                if (!$certificate->requiredtime or 
-                   (certificate_get_course_time($course->id) >= ($certificate->requiredtime * 60))) {
-                    echo "            generating issue certificate for {$student->firstname} {$student->lastname}...";
-                    $certrecord = certificate_get_issue($course, $student, $certificate, $cm);
-                    $context = context_course::instance($course->id);
-                    $event = \mod_certificate\event\certificate_created::create(array(
-                        'objectid' => $certrecord->id,
-                        'context' => $context,
-                        'other' => $certrecord)
-                    );
-                    $event->trigger();
+    echo "\n\nGenerate certificates for users who have completed the course.\n";
 
-                    echo " Done! Certificate {$certrecord->code} generated!\n";
-                } else {
-                    echo "            {$student->firstname} {$student->lastname} has not required course time. Skiped!\n";
-               }
-            }
+    $namefields = get_all_user_name_fields();
+    $namefieldssql = implode(", u.", $namefields);
+    $module = $DB->get_record("modules", array("name"=>"certificate"));
+
+    $sql = "
+        SELECT 
+            c.id as courseid,
+            c.fullname as coursename,
+            ce.id as certificateid,
+            ce.name as certificatename,
+            ce.requiredtime as certificaterequiredtime,
+            ce.gradefmt as certificategradefmt,
+            cm.id as cmid,
+            u.id as userid,
+            u.username,
+            $namefieldssql
+        FROM {course} c
+            INNER JOIN {certificate} ce ON ce.course = c.id
+            INNER JOIN {course_modules} cm ON cm.instance=ce.id and cm.module=:moduleid
+            INNER JOIN {course_completions} cc ON cc.course = c.id
+            INNER JOIN {user} u ON u.id = cc.userid
+            LEFT OUTER JOIN {certificate_issues} ci ON ci.certificateid=ce.id and ci.userid=cc.userid
+        WHERE c.visible=1
+            AND cm.visible=1
+            AND cc.timecompleted > 0
+            AND ci.id IS NULL
+        ORDER BY c.id, ce.id, u.username
+    ";
+
+    $issuelist = $DB->get_records_sql($sql, array("moduleid"=>$module->id));
+    $total = count($issuelist);
+
+    if ($total <= 0) {
+        echo "\tNo certificate issues to be generated...\n";
+        echo "done!\n";
+        return true;
+    }
+
+    echo "\t{$total} certificate issue(s) that may be generated...\n";
+
+    $lastcourseid = null;
+
+    foreach($issuelist as $issue) {
+        $user = new stdClass();
+        $user->id = $issue->userid;
+        $user->username = $issue->username;
+        foreach($namefields as $namefield) {
+            $user->$namefield = $issue->$namefield;
+        }
+
+        $username = fullname($user);
+
+        $certificate = (object) array(
+            "id" => $issue->certificateid,
+            "name" => $issue->certificatename,
+            "course" => $issue->courseid,
+            "requiredtime" => $issue->certificaterequiredtime,
+            "gradefmt" => $issue->certificategradefmt
+        );
+
+        if (is_null($lastcourseid) || $lastcourseid != $issue->courseid) {
+            echo "\t\tProcessing users in course {$issue->coursename} ({$issue->courseid})...\n";
+            $lastcourseid = $issue->courseid;
+        }
+
+        $modinfo = get_fast_modinfo($issue->courseid, $user->id);
+        $cm = $modinfo->get_cm($issue->cmid);
+
+        if ($cm->uservisible) {
+            // O usuário cumpre os requisitos. Podemos gerar o certificado
+            $certissue = certificate_create_issue($user, $certificate);
+            echo "\t\t\tCertificate {$certificate->name} issued for user {$username} with id {$certissue->id}\n";
         } else {
-            echo "        No students without certificate found! Course skipped.\n";
+            $info = new \core_availability\info_module($cm);
+            $reasons = strip_tags($info->get_full_information());
+            echo "\t\t\User {$username} cannot obtain the certificate {$certificate->name} for the following reasons: {$reasons}.\n";
         }
     }
-    
+
+    echo "done!\n";
     return true;
 }

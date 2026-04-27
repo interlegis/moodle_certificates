@@ -364,6 +364,19 @@ function certificate_get_issue($course, $user, $certificate, $cm) {
     }
 
     // Create new certificate issue record
+
+    $certissue = certificate_create_issue($user, $certificate);
+
+    // Email to the teachers and anyone else
+    certificate_email_teachers($course, $certificate, $certissue, $cm);
+    certificate_email_others($course, $certificate, $certissue, $cm);
+
+    return $certissue;
+}
+
+function certificate_create_issue($user, $certificate) {
+    global $DB;
+
     $certissue = new stdClass();
     $certissue->certificateid = $certificate->id;
     $certissue->user = $user->username;
@@ -374,9 +387,12 @@ function certificate_get_issue($course, $user, $certificate, $cm) {
     $certissue->timecreated =  time();
     $certissue->id = $DB->insert_record('certificate_issues', $certissue);
 
-    // Email to the teachers and anyone else
-    certificate_email_teachers($course, $certificate, $certissue, $cm);
-    certificate_email_others($course, $certificate, $certissue, $cm);
+    $event = \mod_certificate\event\certificate_created::create(array(
+        'objectid' => $certissue->id,
+        'context' => context_course::instance($certissue->course),
+        'other' => $certissue)
+    );
+    $event->trigger();
 
     return $certissue;
 }
