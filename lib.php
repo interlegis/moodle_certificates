@@ -391,8 +391,11 @@ function certificate_cron () {
     $namefieldssql = implode(", u.", $namefields);
     $module = $DB->get_record("modules", array("name"=>"certificate"));
 
+    $sqlconcat = $DB->sql_concat('c.id', "'_'", 'ce.id', "'_'", 'u.id');
+
     $sql = "
         SELECT 
+            $sqlconcat as unique_key,
             c.id as courseid,
             c.fullname as coursename,
             ce.id as certificateid,
@@ -437,7 +440,7 @@ function certificate_cron () {
             $user->$namefield = $issue->$namefield;
         }
 
-        $username = fullname($user);
+        $user->fullname = fullname($user);
 
         $certificate = (object) array(
             "id" => $issue->certificateid,
@@ -458,11 +461,11 @@ function certificate_cron () {
         if ($cm->uservisible) {
             // O usuário cumpre os requisitos. Podemos gerar o certificado
             $certissue = certificate_create_issue($user, $certificate);
-            echo "\t\t\tCertificate {$certificate->name} issued for user {$username} with id {$certissue->id}\n";
+            echo "\t\t\tCertificate {$certificate->name} issued for user {$user->username} {$user->fullname} with id {$certissue->id}\n";
         } else {
             $info = new \core_availability\info_module($cm);
             $reasons = strip_tags($info->get_full_information());
-            echo "\t\t\User {$username} cannot obtain the certificate {$certificate->name} for the following reasons: {$reasons}.\n";
+            echo "\t\t\User {$user->username} {$user->fullname} cannot obtain the certificate {$certificate->name} for the following reasons: {$reasons}.\n";
         }
     }
 
